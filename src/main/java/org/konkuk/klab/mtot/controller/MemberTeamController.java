@@ -21,8 +21,8 @@ public class MemberTeamController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/teams/join")
-    public ResponseEntity<MemberTeamJoinResponse> registerMemberToTeam(@RequestBody @Valid MemberTeamJoinRequest request){
+    @PostMapping("/members/{memberId}/teams")
+    public ResponseEntity<MemberTeamJoinResponse> registerMemberToTeam(@RequestBody @Valid MemberTeamJoinRequest request, @PathVariable Long memberId){
         MemberTeamJoinResponse response = memberTeamService.registerMemberToTeam(request);
         return ResponseEntity.ok(response);
     }

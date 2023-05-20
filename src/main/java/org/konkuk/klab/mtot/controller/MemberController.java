@@ -22,7 +22,7 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/join")
+    @PostMapping
     public ResponseEntity<MemberSignUpResponse> signUp(@RequestBody @Valid MemberSignUpRequest request){
         MemberSignUpResponse response = memberService.join(request);
         return ResponseEntity.ok(response);
