@@ -7,7 +7,10 @@ import org.konkuk.klab.mtot.dto.response.MemberGetAllResponse;
 import org.konkuk.klab.mtot.dto.response.MemberSignUpResponse;
 import org.konkuk.klab.mtot.service.MemberService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +29,11 @@ public class MemberController {
     public ResponseEntity<MemberSignUpResponse> signUp(@RequestBody @Valid MemberSignUpRequest request){
         MemberSignUpResponse response = memberService.join(request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public Map<String, Object> currentUser(OAuth2AuthenticationToken oAuth2AuthenticationToken){
+        return oAuth2AuthenticationToken.getPrincipal().getAttributes();
     }
 
 }
