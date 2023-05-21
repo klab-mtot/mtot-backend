@@ -1,9 +1,7 @@
 package org.konkuk.klab.mtot.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,23 +9,29 @@ import java.util.List;
 @Entity
 @Getter
 @RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Journey {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "journey_id")
     private Long id;
 
-    @NonNull
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne
-    private final Team team;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Team team;
 
     @OneToMany(mappedBy = "journey")
-    private List<MemberTeam> posts = new ArrayList<>();
+    private List<Post> posts = new ArrayList<>();
     @OneToMany(mappedBy = "journey")
-    private List<MemberTeam> photos = new ArrayList<>();
+    private List<Photo> photos = new ArrayList<>();
     @OneToMany(mappedBy = "journey")
-    private List<MemberTeam> locations = new ArrayList<>();
+    private List<Locations> locations = new ArrayList<>();
+
+    public Journey(Team team) {
+        this.team = team;
+    }
 
 
 }
