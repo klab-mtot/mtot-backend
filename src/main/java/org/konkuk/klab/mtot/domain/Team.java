@@ -26,7 +26,7 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<MemberTeam> memberTeams = new ArrayList<>();
-z
+
     @OneToMany(mappedBy = "team")
     private List<Journey> journeys = new ArrayList<>();
 
