@@ -22,9 +22,11 @@ public class Team {
     @Column(name = "leader_id", nullable = false)
     private Long leaderId;
 
+
+
     @OneToMany(mappedBy = "team")
     private List<MemberTeam> memberTeams = new ArrayList<>();
-
+z
     @OneToMany(mappedBy = "team")
     private List<Journey> journeyList = new ArrayList<>();
 
