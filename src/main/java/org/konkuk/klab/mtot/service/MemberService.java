@@ -3,6 +3,7 @@ package org.konkuk.klab.mtot.service;
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.dto.request.MemberSignUpRequest;
+import org.konkuk.klab.mtot.dto.request.TeamCreateRequest;
 import org.konkuk.klab.mtot.dto.response.MemberGetAllResponse;
 import org.konkuk.klab.mtot.dto.response.MemberGetResponse;
 import org.konkuk.klab.mtot.dto.response.MemberSignUpResponse;
@@ -17,12 +18,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final TeamService teamService;
 
     @Transactional
     public MemberSignUpResponse join(MemberSignUpRequest request){
         validateDuplicateMembers(request);
         Member member = new Member(request.getName(), request.getEmail(), request.getPassword());
-        return new MemberSignUpResponse(memberRepository.save(member).getId());
+        Long memberId = memberRepository.save(member).getId();
+        teamService.createTeam(new TeamCreateRequest(memberId, member.getName() + "'s Group"));
+        return new MemberSignUpResponse(memberId);
     }
 
     private void validateDuplicateMembers(MemberSignUpRequest request){
