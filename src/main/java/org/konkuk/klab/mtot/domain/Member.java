@@ -23,7 +23,7 @@ public class Member {
     @Column(name = "email", nullable = false)
     String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = true)
     String password;
 
     @OneToMany(mappedBy = "member")
@@ -35,4 +35,8 @@ public class Member {
         this.password = password;
     }
 
+    public Member(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 }
