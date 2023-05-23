@@ -10,14 +10,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Friendship {
     @Id @GeneratedValue
-    @Column(name = "fiendship_id")
+    @Column(name = "friendship_id")
     Long id;
-
-    @ManyToOne
+    @Column(name = "accept", columnDefinition = "boolean default false")
+    private boolean accept;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="requester_id", referencedColumnName = "member_id")
     private Member requester;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="receiver_id", referencedColumnName = "member_id")
     private Member receiver;
 
