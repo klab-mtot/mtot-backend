@@ -33,6 +33,7 @@ public class FriendshipService {
         return new FriendshipResponse(friendshipRepository.save(friendship).getId());
     }
 
+    @Transactional(readOnly = true)
     private List<Member> findMemberIds(String requesterEmail, String receiverEmail) {
         Optional<Member> requester = memberRepository.findByEmail(requesterEmail);
         Optional<Member> receiver = memberRepository.findByEmail(receiverEmail);
@@ -63,7 +64,7 @@ public class FriendshipService {
     @Transactional
     // 친구 추가 거절 or 수락 요청 처리 및 이후 친구 삭제 기능 시 사용 가능
     public int updateFriendship(FriendshipUpdateRequest request){
-        int num;
+        int updatedRows; // 변환된 행 개수 반환 받음
         List<Member> memberList = findMemberIds(request.getRequesterEmail(), request.getReceiverEmail());
         Member requester = memberList.get(0);
         Member receiver = memberList.get(1);
@@ -72,12 +73,12 @@ public class FriendshipService {
         Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(requester.getId(), receiver.getId());
 
         if(request.getAccept()){
-            num = friendshipRepository.updateAcceptTrue(requester.getId(), receiver.getId());
+            updatedRows = friendshipRepository.updateAcceptTrue(requester.getId(), receiver.getId());
         }
         else {
-            num = friendshipRepository.deleteByRequesterIdAndReceiverId(requester.getId(), receiver.getId());
+            updatedRows = friendshipRepository.deleteByRequesterIdAndReceiverId(requester.getId(), receiver.getId());
         }
-        return num;
+        return updatedRows;
     }
 
     // checkAccept, updateFriendship 함수 사용 전 실제로 해당 요청이 있었는지 확인

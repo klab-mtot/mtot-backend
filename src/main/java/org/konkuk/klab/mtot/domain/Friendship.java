@@ -11,15 +11,15 @@ import lombok.NoArgsConstructor;
 public class Friendship {
     @Id @GeneratedValue
     @Column(name = "friendship_id")
-    Long id;
+    private Long id;
     @Column(name = "accept", columnDefinition = "boolean default false")
     private boolean accept;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="requester_id", referencedColumnName = "member_id")
+    @JoinColumn(name="requester_id")
     private Member requester;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="receiver_id", referencedColumnName = "member_id")
+    @JoinColumn(name="receiver_id")
     private Member receiver;
 
     public Friendship(Member requester, Member receiver){
