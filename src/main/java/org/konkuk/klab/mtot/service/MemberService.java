@@ -2,6 +2,7 @@ package org.konkuk.klab.mtot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Member;
+import org.konkuk.klab.mtot.domain.PrincipalDetails;
 import org.konkuk.klab.mtot.dto.request.MemberSignUpRequest;
 import org.konkuk.klab.mtot.dto.request.TeamCreateRequest;
 import org.konkuk.klab.mtot.dto.response.MemberGetAllResponse;
@@ -44,5 +45,13 @@ public class MemberService {
                 )
                 .collect(Collectors.toList());
         return new MemberGetAllResponse(list);
+    }
+
+    public PrincipalDetails loadMemberByUsername(String email){
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    throw new RuntimeException("존재하지 않는 회원입니다.");
+                });
+        return new PrincipalDetails(member);
     }
 }
