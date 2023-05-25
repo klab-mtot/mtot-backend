@@ -3,6 +3,8 @@ spring:
     url: jdbc:h2:~/test;
     username: sa
     driver-class-name: org.h2.Driver
+    authorization:
+      secret: NBGiEbuWoH
 
   jpa:
     hibernate:
@@ -19,6 +21,16 @@ spring:
           google:
             client-id: 730166977613-ebjk5hfak5mplpc5tl6e39fgnpl5h2gr.apps.googleusercontent.com
             client-secret: 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
+            scope:
+              - email
+              - profile
+
+  jwt:
+    header: cookies
+    secret: YW5kMExYUmxjM1F0WVd4cWFtRmlZV1ZuYVMxcWQzUXRkR1Z6ZEMxaGJHcHFZV0poWldkcExXcDNkQzEwWlhOMExXRnNhbXBoWW1GbFoya3RhbmQwTFhSbGMzUXRZV3hxYW1GaVlXVm5hUzFxZDNRdGRHVnpkQzFoYkdwcVlXSmhaV2RwTFdwM2RDMTBaWE4wTFdGc2FtcGhZbUZsWjJrdGFuZDBMWFJsYzNRdFlXeHFhbUZpWVdWbmFTMXFkM1F0ZEdWemRDMWhiR3BxWVdKaFpXZHA=
+    token-validity-in-seconds: 86400
+    authorities-key: footprintsapi
+
 
 logging:
   level:
