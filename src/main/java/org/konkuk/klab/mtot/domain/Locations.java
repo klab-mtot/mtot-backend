@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Locations {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue()
     @Column(name = "Locations_id")
     private Long id;
 
     @Column(name = "journey_id",nullable = false)
-    private  Long journey_id;
+    private Long journey_id;
 
     @Column(name = "member_id",nullable = false)
     private Long member_id;
