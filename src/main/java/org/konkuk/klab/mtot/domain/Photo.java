@@ -13,13 +13,13 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Photo {
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue()
     @Column(name = "photo_id")
     private Long id;
 
 
-    @Column(name = "journey_id",nullable = false)
-    private  long journey_id;
+    //@Column(name = "journey_id",nullable = false)
+    //private  long journey_id;
 
     @Column(name = "filename", nullable = false)
     private String name;
