@@ -8,5 +8,5 @@ import lombok.Getter;
 public class FriendshipUpdateRequest {
     private String requesterEmail;
     private String receiverEmail;
-    private Boolean accept;
+    private Boolean isAccepted;
 }

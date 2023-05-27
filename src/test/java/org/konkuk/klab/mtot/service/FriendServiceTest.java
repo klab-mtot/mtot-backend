@@ -76,7 +76,7 @@ public class FriendServiceTest {
         
         // DB에서 accept table false에서 true값으로 변경
         Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(requester.get().getId(), receiver.get().getId());
-        assertThat(friendship.get().isAccept()).isTrue();
+        assertThat(friendship.get().isAccepted()).isTrue();
     }
 
     @Test

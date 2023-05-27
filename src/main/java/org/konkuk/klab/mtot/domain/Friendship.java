@@ -12,8 +12,10 @@ public class Friendship {
     @Id @GeneratedValue
     @Column(name = "friendship_id")
     private Long id;
-    @Column(name = "accept", columnDefinition = "boolean default false")
-    private boolean accept;
+
+    @Column(name = "accept")
+    private boolean isAccepted;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="requester_id")
     private Member requester;
@@ -25,5 +27,10 @@ public class Friendship {
     public Friendship(Member requester, Member receiver){
         this.requester = requester;
         this.receiver = receiver;
+        this.isAccepted = false;
+    }
+
+    public void setAccepted(boolean accepted) {
+        isAccepted = accepted;
     }
 }

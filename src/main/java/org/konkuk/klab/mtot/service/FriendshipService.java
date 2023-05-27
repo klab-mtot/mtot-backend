@@ -72,8 +72,9 @@ public class FriendshipService {
 
         Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(requester.getId(), receiver.getId());
 
-        if(request.getAccept()){
-            updatedRows = friendshipRepository.updateAcceptTrue(requester.getId(), receiver.getId());
+        if(request.getIsAccepted()){
+            friendship.get().setAccepted(true);
+            updatedRows = 1;
         }
         else {
             updatedRows = friendshipRepository.deleteByRequesterIdAndReceiverId(requester.getId(), receiver.getId());
