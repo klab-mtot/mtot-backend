@@ -33,7 +33,7 @@ public class MemberTeamService {
                 .orElseThrow(()-> new RuntimeException("로그인 유저를 찾을 수 없습니다."));
         if (!Objects.equals(team.getLeaderId(), leader.getId())) throw new RuntimeException("해당 유저는 리더가 아닙니다.");
 
-        memberTeamRepository.findByMemberIdAndTeamId(teamId, memberId)
+        memberTeamRepository.findByMemberIdAndTeamId(memberId, teamId)
                 .ifPresent(memberTeam -> {throw new RuntimeException("그룹에 이미 존재하는 멤버입니다.");});
 
         memberTeamRepository.save(new MemberTeam(member, team));
