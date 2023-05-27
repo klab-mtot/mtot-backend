@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.MemberTeam;
 import org.konkuk.klab.mtot.domain.Team;
-import org.konkuk.klab.mtot.dto.request.MemberTeamJoinRequest;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.konkuk.klab.mtot.repository.MemberTeamRepository;
 import org.konkuk.klab.mtot.repository.TeamRepository;
@@ -58,7 +57,6 @@ class MemberTeamServiceTest {
         Long memberId = memberRepository.save(member).getId();
         Team team = new Team("New team", memberId);
         Long teamId = teamRepository.save(team).getId();
-        MemberTeamJoinRequest req = new MemberTeamJoinRequest(teamId, memberId);
         memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
 
         // when
