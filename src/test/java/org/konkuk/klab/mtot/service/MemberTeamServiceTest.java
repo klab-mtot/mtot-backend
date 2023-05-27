@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.MemberTeam;
 import org.konkuk.klab.mtot.domain.Team;
+import org.konkuk.klab.mtot.dto.response.MemberTeamJoinResponse;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.konkuk.klab.mtot.repository.MemberTeamRepository;
 import org.konkuk.klab.mtot.repository.TeamRepository;
@@ -14,8 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 class MemberTeamServiceTest {
@@ -57,8 +57,10 @@ class MemberTeamServiceTest {
         Long memberId = memberRepository.save(member).getId();
         Team team = new Team("New team", memberId);
         Long teamId = teamRepository.save(team).getId();
-        memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
+        MemberTeamJoinResponse response = memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
 
+        assertThat(memberTeamRepository.findAll()).hasSize(1);
+        assertThat(memberTeamRepository.findAll().get(0).getTeam().getId()).isEqualTo(response.getGroupId());
         // when
         assertThatThrownBy(()->{
             memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
@@ -100,7 +102,7 @@ class MemberTeamServiceTest {
     @AfterEach
     void tearDown(){
         memberTeamRepository.deleteAll(); // 외래키 Delete 순서 고려해야 함
-        memberRepository.deleteAll();
         teamRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 }
