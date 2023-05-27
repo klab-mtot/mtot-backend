@@ -34,14 +34,13 @@ class MemberTeamServiceTest {
     @DisplayName("멤버를 그룹에 추가한다.")
     public void MemberTeamRegister() throws Exception{
         //given
-        Member member = new Member("Lee", "abc@naver.com", "abcd12344");
+        Member member = new Member("Lee", "abc@naver.com");
         Long memberId = memberRepository.save(member).getId();
         Team team = new Team("New team", memberId);
         Long teamId = teamRepository.save(team).getId();
 
         //when
-        MemberTeamJoinRequest req = new MemberTeamJoinRequest(teamId, memberId);
-        memberTeamService.registerMemberToTeam(req);
+        memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
 
         //then
         List<MemberTeam> all = memberTeamRepository.findAll();
@@ -55,16 +54,16 @@ class MemberTeamServiceTest {
     @DisplayName("중복 그룹 추가를 방지한다.")
     public void preventDuplicateMemberRegisteringTeam(){
         // given
-        Member member = new Member("Lee", "abc@naver.com", "abcd12344");
+        Member member = new Member("Lee", "abc@naver.com");
         Long memberId = memberRepository.save(member).getId();
         Team team = new Team("New team", memberId);
         Long teamId = teamRepository.save(team).getId();
         MemberTeamJoinRequest req = new MemberTeamJoinRequest(teamId, memberId);
-        memberTeamService.registerMemberToTeam(req);
+        memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
 
         // when
         assertThatThrownBy(()->{
-            memberTeamService.registerMemberToTeam(req);
+            memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
         }).isInstanceOf(RuntimeException.class);
     }
 
@@ -73,10 +72,10 @@ class MemberTeamServiceTest {
     @DisplayName("멤버 ID로 속한 팀 ID를 찾는다.")
     public void getMemberTeamsByMemberId(){
         // given
-        Member member1 = new Member("Lee", "abc@naver.com", "abcd12344");
+        Member member1 = new Member("Lee", "abc@naver.com");
         Long member1Id = memberRepository.save(member1).getId();
 
-        Member member2 = new Member("Kim", "abcd@naver.com", "qwer1234");
+        Member member2 = new Member("Kim", "abcd@naver.com");
         Long member2Id = memberRepository.save(member2).getId();
 
         Team team1 = new Team("New team", member1Id);
