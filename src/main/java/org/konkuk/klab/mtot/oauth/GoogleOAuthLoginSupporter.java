@@ -31,7 +31,6 @@ public class GoogleOAuthLoginSupporter {
     private String SECRET;
 
     public GoogleUser getUserFromCode(String code){
-        System.out.println(code);
         ResponseEntity<String> googleTokenResponse = getGoogleAccessTokenByCode(code);
         try {
             GoogleToken googleToken = objectMapper.readValue(googleTokenResponse.getBody(), GoogleToken.class);
