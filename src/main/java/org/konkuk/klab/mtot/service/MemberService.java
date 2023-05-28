@@ -6,6 +6,7 @@ import org.konkuk.klab.mtot.dto.request.MemberSignUpRequest;
 import org.konkuk.klab.mtot.dto.response.MemberGetAllResponse;
 import org.konkuk.klab.mtot.dto.response.MemberGetResponse;
 import org.konkuk.klab.mtot.dto.response.MemberSignUpResponse;
+import org.konkuk.klab.mtot.exception.DuplicateMemberException;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,7 @@ public class MemberService {
     private void validateDuplicateMembers(MemberSignUpRequest request){
         memberRepository.findByEmail(request.getEmail())
                 .ifPresent(member -> {
-                    throw new RuntimeException("이미 존재하는 회원입니다.");
+                    throw new DuplicateMemberException();
                 });
     }
 
