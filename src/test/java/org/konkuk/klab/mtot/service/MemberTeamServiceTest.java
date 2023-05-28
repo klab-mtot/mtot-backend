@@ -7,6 +7,7 @@ import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.MemberTeam;
 import org.konkuk.klab.mtot.domain.Team;
 import org.konkuk.klab.mtot.dto.response.MemberTeamJoinResponse;
+import org.konkuk.klab.mtot.exception.DuplicateMemberOnTeamException;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.konkuk.klab.mtot.repository.MemberTeamRepository;
 import org.konkuk.klab.mtot.repository.TeamRepository;
@@ -64,7 +65,7 @@ class MemberTeamServiceTest {
         // when
         assertThatThrownBy(()->{
             memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
-        }).isInstanceOf(RuntimeException.class);
+        }).isInstanceOf(DuplicateMemberOnTeamException.class);
     }
 
 
