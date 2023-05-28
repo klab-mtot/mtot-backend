@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.MemberTeam;
 import org.konkuk.klab.mtot.domain.Team;
-import org.konkuk.klab.mtot.dto.request.MemberTeamJoinRequest;
+import org.konkuk.klab.mtot.dto.response.MemberTeamJoinResponse;
 import org.konkuk.klab.mtot.exception.DuplicateMemberOnTeamException;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.konkuk.klab.mtot.repository.MemberTeamRepository;
@@ -16,8 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 class MemberTeamServiceTest {
@@ -35,14 +34,13 @@ class MemberTeamServiceTest {
     @DisplayName("멤버를 그룹에 추가한다.")
     public void MemberTeamRegister() throws Exception{
         //given
-        Member member = new Member("Lee", "abc@naver.com", "abcd12344");
+        Member member = new Member("Lee", "abc@naver.com");
         Long memberId = memberRepository.save(member).getId();
         Team team = new Team("New team", memberId);
         Long teamId = teamRepository.save(team).getId();
 
         //when
-        MemberTeamJoinRequest req = new MemberTeamJoinRequest(teamId, memberId);
-        memberTeamService.registerMemberToTeam(req);
+        memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
 
         //then
         List<MemberTeam> all = memberTeamRepository.findAll();
@@ -56,16 +54,17 @@ class MemberTeamServiceTest {
     @DisplayName("중복 그룹 추가를 방지한다.")
     public void preventDuplicateMemberRegisteringTeam(){
         // given
-        Member member = new Member("Lee", "abc@naver.com", "abcd12344");
+        Member member = new Member("Lee", "abc@naver.com");
         Long memberId = memberRepository.save(member).getId();
         Team team = new Team("New team", memberId);
         Long teamId = teamRepository.save(team).getId();
-        MemberTeamJoinRequest req = new MemberTeamJoinRequest(teamId, memberId);
-        memberTeamService.registerMemberToTeam(req);
+        MemberTeamJoinResponse response = memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
 
+        assertThat(memberTeamRepository.findAll()).hasSize(1);
+        assertThat(memberTeamRepository.findAll().get(0).getTeam().getId()).isEqualTo(response.getGroupId());
         // when
         assertThatThrownBy(()->{
-            memberTeamService.registerMemberToTeam(req);
+            memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
         }).isInstanceOf(DuplicateMemberOnTeamException.class);
     }
 
@@ -74,10 +73,10 @@ class MemberTeamServiceTest {
     @DisplayName("멤버 ID로 속한 팀 ID를 찾는다.")
     public void getMemberTeamsByMemberId(){
         // given
-        Member member1 = new Member("Lee", "abc@naver.com", "abcd12344");
+        Member member1 = new Member("Lee", "abc@naver.com");
         Long member1Id = memberRepository.save(member1).getId();
 
-        Member member2 = new Member("Kim", "abcd@naver.com", "qwer1234");
+        Member member2 = new Member("Kim", "abcd@naver.com");
         Long member2Id = memberRepository.save(member2).getId();
 
         Team team1 = new Team("New team", member1Id);
@@ -104,7 +103,7 @@ class MemberTeamServiceTest {
     @AfterEach
     void tearDown(){
         memberTeamRepository.deleteAll(); // 외래키 Delete 순서 고려해야 함
-        memberRepository.deleteAll();
         teamRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 }
