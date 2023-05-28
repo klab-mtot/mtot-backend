@@ -22,8 +22,6 @@ public class Team {
     @Column(name = "leader_id", nullable = false)
     private Long leaderId;
 
-
-
     @OneToMany(mappedBy = "team")
     private List<MemberTeam> memberTeams = new ArrayList<>();
 
