@@ -1,42 +1,36 @@
 package org.konkuk.klab.mtot.service;
 
 import lombok.RequiredArgsConstructor;
+import org.konkuk.klab.mtot.domain.Journey;
 import org.konkuk.klab.mtot.domain.Post;
-import org.konkuk.klab.mtot.dto.request.PostCreateRequest;
-import org.konkuk.klab.mtot.dto.request.PostReadRequest;
-import org.konkuk.klab.mtot.dto.request.PostUpdateRequest;
-import org.konkuk.klab.mtot.dto.response.PostCreateResponse;
-import org.konkuk.klab.mtot.dto.response.PostReadResponse;
-import org.konkuk.klab.mtot.dto.response.PostUpdateResponse;
+import org.konkuk.klab.mtot.dto.response.CreatePostResponse;
+import org.konkuk.klab.mtot.repository.JourneyRepository;
 import org.konkuk.klab.mtot.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
-    //CREATE
+    private final JourneyRepository journeyRepository;
+
     @Transactional
-    public PostCreateResponse createPost(PostCreateRequest request){
-        //request.getJourney_id()
-        Post post = new Post();
-        return new PostCreateResponse(post.getId());
+    public CreatePostResponse createPost(String memberEmail, Long journeyId, String title, String article){
+        Journey journey = journeyRepository.findById(journeyId)
+                .orElseThrow(() -> new RuntimeException("여정이 존재하지 않습니다."));
+
+        journey.getTeam().getMemberTeams()
+                .stream()
+                .filter(memberTeam -> memberTeam.getMember().getEmail().equals(memberEmail))
+                .findAny()
+                .orElseThrow(()-> new RuntimeException("멤버가 그룹에 속하지 않습니다."));
+
+        postRepository.findByJourneyId(journeyId)
+                .ifPresent(foundJourney-> new RuntimeException("이미 포스트가 존재합니다."));
+
+        Post post = new Post(journey, title, article);
+        Long postId = postRepository.save(post).getId();
+        return new CreatePostResponse(postId);
     }
-    //READ
-    public PostReadResponse readPost(PostReadRequest request){
-            Optional<Post> post = postRepository.findByPostId(request.getPost_id());
-        return new PostReadResponse(post.get().getPostHtml());
-    }
-    //UPDATE
-    @Transactional
-    public PostUpdateResponse updatePost(PostUpdateRequest request){
-        Optional<Post> post = postRepository.findByPostId(request.getId());
-        post.get().setPostHtml(request.getHtml());
-        return new PostUpdateResponse(0);
-    }
-    //DELETE 저니 삭제시 cascade하게 구현 필요한데 이건 나중에
 }
