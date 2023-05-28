@@ -41,7 +41,8 @@ class JwtServiceTest {
     @Test
     @DisplayName("만료된 토큰은 예외를 발생한다.")
     public void raiseExceptionWhenExpiredTokenIsGiven(){
-        JwtService newJwtService = new JwtService("SECRET", -1L);
+        String secretKey = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        JwtService newJwtService = new JwtService(secretKey, -1L);
         String token = newJwtService.generateToken("abc@mail.com");
         assertThatThrownBy(()-> newJwtService.verifyToken(token))
                 .isInstanceOf(RuntimeException.class);
