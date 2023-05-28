@@ -22,13 +22,11 @@ public class Team {
     @Column(name = "leader_id", nullable = false)
     private Long leaderId;
 
-
-
     @OneToMany(mappedBy = "team")
     private List<MemberTeam> memberTeams = new ArrayList<>();
 
     @OneToMany(mappedBy = "team")
-    private List<Journey> journeys = new ArrayList<>();
+    private List<Journey> journeyList = new ArrayList<>();
 
     public Team(String name, Long leaderId) {
         this.name = name;
