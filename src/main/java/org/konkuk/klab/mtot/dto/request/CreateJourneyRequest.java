@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class JourneyCreateRequest {
+public class CreateJourneyRequest {
     private String name;
-    private Long team_id;
+    private Long teamId;
 }
