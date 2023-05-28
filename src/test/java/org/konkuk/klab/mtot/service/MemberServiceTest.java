@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.dto.request.MemberSignUpRequest;
+import org.konkuk.klab.mtot.exception.DuplicateMemberException;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.konkuk.klab.mtot.repository.MemberTeamRepository;
 import org.konkuk.klab.mtot.repository.TeamRepository;
@@ -48,7 +49,7 @@ class MemberServiceTest {
         memberService.join(request);
 
         assertThatThrownBy(()-> memberService.join(request))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(DuplicateMemberException.class);
     }
 
     @AfterEach
