@@ -3,26 +3,35 @@ package org.konkuk.klab.mtot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
-import org.konkuk.klab.mtot.domain.Member;
-import org.konkuk.klab.mtot.dto.request.JourneyCreateRequest;
-import org.konkuk.klab.mtot.dto.request.MemberSignUpRequest;
+import org.konkuk.klab.mtot.domain.Team;
 import org.konkuk.klab.mtot.dto.response.JourneyCreateResponse;
-import org.konkuk.klab.mtot.dto.response.MemberSignUpResponse;
 import org.konkuk.klab.mtot.repository.JourneyRepository;
+import org.konkuk.klab.mtot.repository.TeamRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class JourneyService {
+
     private final JourneyRepository journeyRepository;
-    // 저니 생성
+    private final TeamRepository teamRepository;
     @Transactional
-    public JourneyCreateResponse CreateJourney(JourneyCreateRequest request){
-        Journey journey = new Journey(request.getName(), request.getTeam_id());
-        Long journey_id = journeyRepository.save(journey).getId();
-        return new JourneyCreateResponse(journey_id);
+    public JourneyCreateResponse createJourney(String memberEmail, String journeyName, Long teamId){
+        Team team = teamRepository.findById(teamId).orElseThrow(()->
+                new RuntimeException("존재하지 않는 그룹입니다.")
+        );
+
+        team.getMemberTeams().stream().filter(memberTeam ->
+                Objects.equals(memberTeam.getMember().getEmail(), memberEmail)
+        ).findAny().orElseThrow(()-> new RuntimeException("그룹에 속하지 않는 멤버입니다."));
+
+        Journey journey = new Journey(team, journeyName);
+        Long journeyId = journeyRepository.save(journey).getId();
+
+        return new JourneyCreateResponse(journeyId);
     }
     //저니 핀 목록 제공
 
