@@ -23,16 +23,12 @@ public class Member {
     @Column(name = "email", nullable = false)
     String email;
 
-    @Column(name = "password", nullable = false)
-    String password;
-
     @OneToMany(mappedBy = "member")
     private List<MemberTeam> memberTeams = new ArrayList<>();
 
-    public Member(String name, String email, String password) {
+    public Member(String name, String email) {
         this.name = name;
         this.email = email;
-        this.password = password;
     }
 
 }
