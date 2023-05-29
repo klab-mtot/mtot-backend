@@ -49,7 +49,7 @@ class PostServiceTest {
         // given
         Long journeyId = registerAndReturnJourney().getId();
         String newMail = "def@mail.net";
-        Member member = new Member("Park", newMail, "1234");
+        Member member = new Member("Park", newMail);
         memberRepository.save(member);
 
         assertThatThrownBy(()->postService.createPost(newMail, journeyId, title, article))
@@ -74,7 +74,7 @@ class PostServiceTest {
         // given
         String newMail = "def@mail.net";
         Journey journey = registerAndReturnJourney();
-        Member member = new Member("Park", newMail, "1234");
+        Member member = new Member("Park", newMail);
         memberRepository.save(member);
         memberTeamRepository.save(new MemberTeam(member, journey.getTeam()));
 
@@ -90,7 +90,7 @@ class PostServiceTest {
     private final String journeyName = "My Journey";
     
     private Journey registerAndReturnJourney(){
-        Member member = new Member("Lee", email, "1123");
+        Member member = new Member("Lee", email);
         Long id = memberRepository.save(member).getId();
         Team team = new Team("My Team", id);
         Long teamId = teamRepository.save(team).getId();

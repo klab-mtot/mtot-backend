@@ -65,7 +65,7 @@ class JourneyServiceTest {
         // given
         Long teamId = registerAndReturnTeamId();
         String newMail = "def@mail.com";
-        Member member = new Member("Park", newMail, "134");
+        Member member = new Member("Park", newMail);
         Long memberId = memberRepository.save(member).getId();
 
         // when
@@ -77,7 +77,7 @@ class JourneyServiceTest {
     private final String email = "abc@mail.com";
     private final String journeyName = "My Journey";
     private Long registerAndReturnTeamId(){
-        Member member = new Member("Lee", email, "1123");
+        Member member = new Member("Lee", email);
         Long id = memberRepository.save(member).getId();
         Team team = new Team("My Team", id);
         Long teamId = teamRepository.save(team).getId();
