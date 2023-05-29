@@ -12,10 +12,6 @@ public interface MemberTeamRepository extends JpaRepository<MemberTeam, Long> {
     @Query("select mg from MemberTeam mg where mg.member.id =:memberId")
     List<MemberTeam> findAllByMemberId(@Param("memberId") Long memberId);
 
-    @Query("select mg from MemberTeam mg where mg.member.email =:memberEmail")
-    List<MemberTeam> findAllByMemberEmail(@Param("memberEmail") String memberEmail);
-
-    @Query("select mg from MemberTeam mg where mg.member.id =:memberId and mg.team.id =:teamId")
     Optional<MemberTeam> findByMemberIdAndTeamId(@Param("memberId") Long memberId,
                                                  @Param("teamId") Long teamId);
 }
