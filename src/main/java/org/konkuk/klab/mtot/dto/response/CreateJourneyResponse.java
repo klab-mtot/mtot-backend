@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class JourneyCreateResponse {
-    private Long journey_id;
+public class CreateJourneyResponse {
+    private Long id;
 }
