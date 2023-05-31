@@ -4,7 +4,7 @@ package org.konkuk.klab.mtot.service;
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
 import org.konkuk.klab.mtot.domain.Team;
-import org.konkuk.klab.mtot.dto.response.JourneyCreateResponse;
+import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
 import org.konkuk.klab.mtot.exception.TeamAccessDeniedException;
 import org.konkuk.klab.mtot.exception.TeamNotFoundException;
 import org.konkuk.klab.mtot.repository.JourneyRepository;
@@ -21,7 +21,7 @@ public class JourneyService {
     private final JourneyRepository journeyRepository;
     private final TeamRepository teamRepository;
     @Transactional
-    public JourneyCreateResponse createJourney(String memberEmail, String journeyName, Long teamId){
+    public CreateJourneyResponse createJourney(String memberEmail, String journeyName, Long teamId){
         Team team = teamRepository.findById(teamId).orElseThrow(TeamNotFoundException::new);
 
         team.getMemberTeams().stream().filter(memberTeam ->
@@ -31,7 +31,7 @@ public class JourneyService {
         Journey journey = new Journey(team, journeyName);
         Long journeyId = journeyRepository.save(journey).getId();
 
-        return new JourneyCreateResponse(journeyId);
+        return new CreateJourneyResponse(journeyId);
     }
     //저니 핀 목록 제공
 
@@ -40,7 +40,6 @@ public class JourneyService {
     //저니 사진 목록 추가만 여기서 사진 등록은 사진 서비스에서 처리
 
     //저니 포스트 자동으로 생성되는거 연결
-
 
 
 }
