@@ -86,6 +86,53 @@ class PostServiceTest {
                         postService.createPost(newMail, journey.getId(), "New Title", "New Article"));
     }
 
+    @Test
+    @DisplayName("게시글을 성공적으로 수정한다.")
+    public void editPost(){
+        // given
+        Long journeyId = registerAndReturnJourney().getId();
+        postService.createPost(email, journeyId, title, article);
+
+        // when
+        String editTitle = "Edit Title";
+        postService.editPost(email, journeyId, editTitle, "EDIT");
+
+        assertThat(postRepository.findByJourneyId(journeyId).get().getTitle()).isEqualTo(editTitle);
+    }
+
+    @Test
+    @DisplayName("그룹장이 아닌 다른 그룹원이 성공적으로 게시글을 수정한다.")
+    public void editPostByAnotherGroupMember(){
+        // given
+        String newMail = "def@mail.net";
+        Journey journey = registerAndReturnJourney();
+        Member member = new Member("Park", newMail);
+        memberRepository.save(member);
+        memberTeamRepository.save(new MemberTeam(member, journey.getTeam()));
+        postService.createPost(email, journey.getId(), "Title", "Article");
+
+        // when
+        assertThatNoException()
+                .isThrownBy(()->
+                        postService.editPost(newMail, journey.getId(), "New Title", "New Article"));
+    }
+
+    @Test
+    @DisplayName("그룹 외의 사람이 게시글을 수정한다.")
+    public void raiseWhenEditPostByAnotherPerson(){
+        // given
+        String newMail = "def@mail.net";
+        Journey journey = registerAndReturnJourney();
+        Member member = new Member("Park", newMail);
+        memberRepository.save(member);
+        postService.createPost(email, journey.getId(), "Title", "Article");
+
+        // when
+        assertThatThrownBy(()->
+                        postService.editPost(newMail, journey.getId(), "New Title", "New Article"))
+                .isInstanceOf(TeamAccessDeniedException.class);
+    }
+
     private final String title = "Post no.1";
     private final String article = "Post Article Lorem Ipsum";
     private final String email = "abc@mail.com";
