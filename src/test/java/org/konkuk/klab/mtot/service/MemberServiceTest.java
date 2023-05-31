@@ -5,7 +5,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.dto.request.MemberSignUpRequest;
+import org.konkuk.klab.mtot.exception.DuplicateMemberException;
 import org.konkuk.klab.mtot.repository.MemberRepository;
+import org.konkuk.klab.mtot.repository.MemberTeamRepository;
+import org.konkuk.klab.mtot.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -21,6 +24,11 @@ class MemberServiceTest {
     MemberService memberService;
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    MemberTeamRepository memberTeamRepository;
+    @Autowired
+    TeamRepository teamRepository;
+
     @Test
     @DisplayName("회원 가입을 성공적으로 진행한다")
     public void signUpTest(){
@@ -41,11 +49,13 @@ class MemberServiceTest {
         memberService.join(request);
 
         assertThatThrownBy(()-> memberService.join(request))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(DuplicateMemberException.class);
     }
 
     @AfterEach
     void tearDown() {
+        memberTeamRepository.deleteAll();
+        teamRepository.deleteAll();
         memberRepository.deleteAll();
     }
 }

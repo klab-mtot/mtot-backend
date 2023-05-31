@@ -6,6 +6,7 @@ import org.konkuk.klab.mtot.dto.request.MemberSignUpRequest;
 import org.konkuk.klab.mtot.dto.response.MemberGetAllResponse;
 import org.konkuk.klab.mtot.dto.response.MemberGetResponse;
 import org.konkuk.klab.mtot.dto.response.MemberSignUpResponse;
+import org.konkuk.klab.mtot.exception.DuplicateMemberException;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,18 +18,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final TeamService teamService;
 
     @Transactional
     public MemberSignUpResponse join(MemberSignUpRequest request){
         validateDuplicateMembers(request);
-        Member member = new Member(request.getName(), request.getEmail(), request.getPassword());
-        return new MemberSignUpResponse(memberRepository.save(member).getId());
+        Member member = new Member(request.getName(), request.getEmail());
+        Long memberId = memberRepository.save(member).getId();
+        teamService.createTeam(request.getEmail(),member.getName() + "'s Group");
+        return new MemberSignUpResponse(memberId);
     }
 
     private void validateDuplicateMembers(MemberSignUpRequest request){
         memberRepository.findByEmail(request.getEmail())
                 .ifPresent(member -> {
-                    throw new RuntimeException("이미 존재하는 회원입니다.");
+                    throw new DuplicateMemberException();
                 });
     }
 
