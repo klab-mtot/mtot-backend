@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class createPinResponse {
+public class CreatePinResponse {
     private Long id;
 }
