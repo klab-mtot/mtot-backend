@@ -34,7 +34,7 @@ public class GoogleOAuthLoginSupporter {
         ResponseEntity<String> googleTokenResponse = getGoogleAccessTokenByCode(code);
         try {
             GoogleToken googleToken = objectMapper.readValue(googleTokenResponse.getBody(), GoogleToken.class);
-            ResponseEntity<String> googleGetResponse = createGetRequest(googleToken.getAccessToken());
+            ResponseEntity<String> googleGetResponse = getMemberPropertiesAsResponse(googleToken.getAccessToken());
             return objectMapper.readValue(googleGetResponse.getBody(), GoogleUser.class);
         } catch(JsonProcessingException e){
             e.printStackTrace();
@@ -56,7 +56,7 @@ public class GoogleOAuthLoginSupporter {
         return restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
     }
 
-    private ResponseEntity<String> createGetRequest(String googleToken){
+    private ResponseEntity<String> getMemberPropertiesAsResponse(String googleToken){
         String url = "https://www.googleapis.com/oauth2/v1/userinfo";
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + googleToken);
