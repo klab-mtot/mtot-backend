@@ -133,6 +133,16 @@ class PostServiceTest {
                 .isInstanceOf(TeamAccessDeniedException.class);
     }
 
+    @Test
+    @DisplayName("게시글 중복 요청 시 예외를 발생한다")
+    public void validateDuplicatePosts(){
+        Journey journey = registerAndReturnJourney();
+        postService.createPost(email, journey.getId(), title, article);
+
+        assertThatThrownBy(()->{postService.createPost(email, journey.getId(), "More post", "More post article");})
+                .isInstanceOf(DuplicatePostException.class);
+    }
+
     private final String title = "Post no.1";
     private final String article = "Post Article Lorem Ipsum";
     private final String email = "abc@mail.com";
