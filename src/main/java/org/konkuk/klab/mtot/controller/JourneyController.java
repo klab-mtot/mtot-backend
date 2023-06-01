@@ -3,7 +3,6 @@ package org.konkuk.klab.mtot.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.dto.request.CreateJourneyRequest;
-import org.konkuk.klab.mtot.dto.request.MemberSignUpRequest;
 import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
 import org.konkuk.klab.mtot.oauth.LoginMemberEmail;
 import org.konkuk.klab.mtot.service.JourneyService;
