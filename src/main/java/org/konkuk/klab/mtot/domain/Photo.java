@@ -17,12 +17,18 @@ public class Photo {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Journey journey;
-
-    @Column(name = "path", nullable = false)
-    private String path;
+    private Pin pin;
 
     @Column(name = "uploadDate")
     private LocalDate uploadDate;
 
+    @Column(name = "filePath")
+    private String filePath;
+
+    public Photo(Pin pin, String filePath, LocalDate uploadDate) {
+        this.pin = pin;
+        pin.getPhotos().add(this);
+        this.filePath = filePath;
+        this.uploadDate = uploadDate;
+    }
 }

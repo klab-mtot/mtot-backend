@@ -27,7 +27,7 @@ public class Journey {
     private Post post;
 
     @OneToMany(mappedBy = "journey")
-    private List<Photo> photos = new ArrayList<>();
+    private List<Pin> pins = new ArrayList<>();
 
     public Journey(Team team, String journeyName) {
         this.name = journeyName;

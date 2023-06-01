@@ -27,4 +27,9 @@ public class Post {
         this.title = title;
         this.article = article;
     }
+
+    public void edit(String title, String article) {
+        this.title = title;
+        this.article = article;
+    }
 }
