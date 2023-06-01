@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
 import org.konkuk.klab.mtot.domain.Photo;
 import org.konkuk.klab.mtot.domain.Pin;
+import org.konkuk.klab.mtot.dto.response.PhotoLinksResponse;
 import org.konkuk.klab.mtot.dto.response.PhotoUploadResponse;
 import org.konkuk.klab.mtot.exception.JourneyNotFoundException;
 import org.konkuk.klab.mtot.exception.PinNotFound;
@@ -57,4 +58,21 @@ public class PhotoService {
         return new PhotoUploadResponse(photoIds, filePaths);
     }
 
+    public PhotoLinksResponse  findPhotoByPin(Pin pin){
+        List<Photo> photos = photoRepository.findByPin(pin);
+        List<String> links = new ArrayList();
+        for(Photo photo : photos){
+            links.add(photo.getFilePath());
+        }
+        return new PhotoLinksResponse(links);
+    }
+
+    public PhotoLinksResponse  findPhotoByJourney(Journey journey){
+        List<Photo> photos = photoRepository.findByJourney(journey);
+        List<String> links = new ArrayList();
+        for(Photo photo : photos){
+            links.add(photo.getFilePath());
+        }
+        return new PhotoLinksResponse(links);
+    }
 }
