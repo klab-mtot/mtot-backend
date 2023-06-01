@@ -22,13 +22,13 @@ public class Photo {
     @Column(name = "uploadDate")
     private LocalDate uploadDate;
 
-    @Column(name = "filePath")
-    private String filePath;
+    @Column(name = "imageUrl")
+    private String imageUrl;
 
-    public Photo(Pin pin, String filePath, LocalDate uploadDate) {
+    public Photo(Pin pin, String imageUrl, LocalDate uploadDate) {
         this.pin = pin;
         pin.getPhotos().add(this);
-        this.filePath = filePath;
+        this.imageUrl = imageUrl;
         this.uploadDate = uploadDate;
     }
 }
