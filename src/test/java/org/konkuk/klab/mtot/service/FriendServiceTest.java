@@ -5,14 +5,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.konkuk.klab.mtot.domain.Friendship;
 import org.konkuk.klab.mtot.domain.Member;
-import org.konkuk.klab.mtot.dto.request.FriendshipRequest;
-import org.konkuk.klab.mtot.dto.request.FriendshipUpdateRequest;
-import org.konkuk.klab.mtot.dto.request.MemberSignUpRequest;
+import org.konkuk.klab.mtot.dto.request.*;
 import org.konkuk.klab.mtot.repository.FriendshipRepository;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,5 +103,59 @@ public class FriendServiceTest {
         // 해당 요청 DB에서 삭제
         Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(requester.get().getId(), receiver.get().getId());
         assertThat(friendship).isEmpty();
+    }
+
+    @Test
+    @DisplayName("친구 신청 보낸 것 과 받은 것 (수락되지 않은 것만) 가져오기")
+    public void friendshipCheckTest(){
+        String mail = "LeeSJ@naver.com";
+        MemberSignUpRequest request = new MemberSignUpRequest("KBC", mail, "q1w2e3r4");
+        memberService.join(request);
+
+        mail = "abcdef@naver.com";
+        request = new MemberSignUpRequest("gwonpyo", mail, "q1w2e3r4");
+        memberService.join(request);
+
+        Optional<Member> requester = memberRepository.findByEmail("LeeSJ@naver.com");
+        Optional<Member> receiver = memberRepository.findByEmail("abcdef@naver.com");
+
+        // 친구 요청
+        FriendshipRequest friendshipRequest = new FriendshipRequest(requester.get().getEmail(), receiver.get().getEmail());
+        friendshipService.requestFriend(friendshipRequest);
+
+        // 친구 신청 온 것 확인
+        FriendshipCheckRequest request1 = new FriendshipCheckRequest(requester.get().getEmail());
+        List<Friendship> checkList1 = friendshipService.checkMemberReceiveNotAccept(request1);
+
+        // 친구 신청 보낸 것 확인
+        FriendshipCheckRequest request2 = new FriendshipCheckRequest(receiver.get().getEmail());
+        List<Friendship> checkList2 = friendshipService.checkMemberRequestNotAccepted(request2);
+    }
+
+    @Test
+    @DisplayName("친구 목록 가져오기")
+    public void friendCheckTest(){
+        String mail = "LeeSJ@naver.com";
+        MemberSignUpRequest request = new MemberSignUpRequest("KBC", mail, "q1w2e3r4");
+        memberService.join(request);
+
+        mail = "abcdef@naver.com";
+        request = new MemberSignUpRequest("gwonpyo", mail, "q1w2e3r4");
+        memberService.join(request);
+
+        Optional<Member> requester = memberRepository.findByEmail("LeeSJ@naver.com");
+        Optional<Member> receiver = memberRepository.findByEmail("abcdef@naver.com");
+
+        // 친구 요청
+        FriendshipRequest friendshipRequest = new FriendshipRequest(requester.get().getEmail(), receiver.get().getEmail());
+        friendshipService.requestFriend(friendshipRequest);
+
+        // 요청 수락
+        FriendshipUpdateRequest friendshipUpdateRequest = new FriendshipUpdateRequest(requester.get().getEmail(), receiver.get().getEmail(), true);
+        friendshipService.updateFriendship(friendshipUpdateRequest);
+
+        // 친구 확인
+        FriendCheckRequest friendCheckRequest = new FriendCheckRequest(requester.get().getEmail());
+        List<Friendship> checkList = friendshipService.checkMemberFriend(friendCheckRequest);
     }
 }

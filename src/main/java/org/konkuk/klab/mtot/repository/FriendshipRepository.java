@@ -15,14 +15,14 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Optional<Friendship> findByRequesterIdAndReceiverId(Long requesterId, Long receiverId);
 
     // 유저가 받지 않은 친구 요청을 발환함
-    @Query("select f from Friendship f where f.receiver.id=:userId and f.isAccepted=false")
-    List<Friendship> findUserFriendshipNotAccepted(Long userId);
+    @Query("select f from Friendship f where f.receiver.id=:memberId and f.isAccepted=false")
+    List<Friendship> findPendingFriendshipReceivedByMemberId(Long memberId);
 
-    @Query("select f from Friendship f where f.requester.id=:userId and f.isAccepted=false")
-    List<Friendship> findUserFriendshipNotAccept(Long userId);
+    @Query("select f from Friendship f where f.requester.id=:memberId and f.isAccepted=false")
+    List<Friendship> findPendingFrendshipRequestedByMemberId(Long memberId);
 
-    @Query("select f from Friendship f where f.receiver.id=:userId and f.isAccepted=false")
-    List<Friendship> findUserFriend(Long userId);
+    @Query("select f from Friendship f where f.receiver.id=:memberId and f.isAccepted=false")
+    List<Friendship> findMemberFriend(Long memberId);
 
     @Transactional
     @Modifying

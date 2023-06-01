@@ -8,6 +8,7 @@ import org.konkuk.klab.mtot.dto.request.FriendshipCheckRequest;
 import org.konkuk.klab.mtot.dto.request.FriendshipRequest;
 import org.konkuk.klab.mtot.dto.request.FriendshipUpdateRequest;
 import org.konkuk.klab.mtot.dto.response.FriendshipResponse;
+import org.konkuk.klab.mtot.exception.MemberNotFoundException;
 import org.konkuk.klab.mtot.repository.FriendshipRepository;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,10 @@ public class FriendshipService {
     @Transactional
     // 친구 요청 보내기 (친구 요청 DB에 저장)
     public FriendshipResponse requestFriend(FriendshipRequest request){
-        Member requester = findMemberId(request.getRequesterEmail());
-        Member receiver = findMemberId(request.getReceiverEmail());
-
+        Member requester = memberRepository.findByEmail(request.getRequesterEmail())
+                .orElseThrow(MemberNotFoundException::new);
+        Member receiver = memberRepository.findByEmail(request.getReceiverEmail())
+                .orElseThrow(MemberNotFoundException::new);
         validateDuplicateFriendship(requester, receiver);
 
         Friendship friendship = new Friendship(requester, receiver);
@@ -36,25 +38,25 @@ public class FriendshipService {
 
     @Transactional(readOnly = true)
     // 유저 친구 확인
-    public List<Friendship> checkUserFriend(FriendCheckRequest request){
-        Member user = findMemberId(request.getUserEmail());
-        List<Friendship> friendshipList = friendshipRepository.findUserFriend(user.getId());
+    public List<Friendship> checkMemberFriend(FriendCheckRequest request){
+        Member member = memberRepository.findByEmail(request.getMemberEmail()).orElseThrow(MemberNotFoundException::new);
+        List<Friendship> friendshipList = friendshipRepository.findMemberFriend(member.getId());
         return friendshipList;
     }
 
     @Transactional(readOnly = true)
     // 유저가 보낸 친구 요청 확인 (수락 되지 않은 것)
-    public List<Friendship> checkUserRequestNotAccepted(FriendshipCheckRequest request){
-        Member user = findMemberId(request.getUserEmail());
-        List<Friendship> friendshipList = friendshipRepository.findUserFriendshipNotAccepted(user.getId());
+    public List<Friendship> checkMemberRequestNotAccepted(FriendshipCheckRequest request){
+        Member member = memberRepository.findByEmail(request.getMemberEmail()).orElseThrow(MemberNotFoundException::new);
+        List<Friendship> friendshipList = friendshipRepository.findPendingFriendshipReceivedByMemberId(member.getId());
         return friendshipList;
     }
 
     @Transactional(readOnly = true)
     // 유저가 받은 친구 요청 확인 (수락 하지 않은 것)
-    public List<Friendship> checkUserReceiveNotAccept(FriendshipCheckRequest request){
-        Member user = findMemberId(request.getUserEmail());
-        List<Friendship> friendshipList = friendshipRepository.findUserFriendshipNotAccept(user.getId());
+    public List<Friendship> checkMemberReceiveNotAccept(FriendshipCheckRequest request){
+        Member member = memberRepository.findByEmail(request.getMemberEmail()).orElseThrow(MemberNotFoundException::new);
+        List<Friendship> friendshipList = friendshipRepository.findPendingFrendshipRequestedByMemberId(member.getId());
         return friendshipList;
     }
 
@@ -62,8 +64,9 @@ public class FriendshipService {
     // 친구 추가 거절 or 수락 요청 처리 및 이후 친구 삭제 기능 시 사용 가능
     public int updateFriendship(FriendshipUpdateRequest request){
         int updatedRows; // 변환된 행 개수 반환 받음
-        Member requester = findMemberId(request.getRequesterEmail());
-        Member receiver = findMemberId((request.getReceiverEmail()));
+        Member requester = memberRepository.findByEmail(request.getRequesterEmail()).orElseThrow(MemberNotFoundException::new);
+        Member receiver = memberRepository.findByEmail(request.getReceiverEmail())
+                .orElseThrow(MemberNotFoundException::new);
         validateFriendshipExist(requester, receiver);
 
         Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(requester.getId(), receiver.getId());
@@ -76,13 +79,6 @@ public class FriendshipService {
             updatedRows = friendshipRepository.deleteByRequesterIdAndReceiverId(requester.getId(), receiver.getId());
         }
         return updatedRows;
-    }
-
-    // 실제로 이러한 유저가 존재하는지 확인 (DB에서 memberRepository 접근하여 해당 유저들 있는지 확인)
-    private Member findMemberId(String Email) {
-        Optional<Member> member = memberRepository.findByEmail(Email);
-        if(member.isEmpty()) {throw new RuntimeException("멤버가 존재하지 않습니다.");}
-        return member.get();
     }
 
     // 친구 추가 요청시 중복된 friendship이 이미 존재하는지 확인

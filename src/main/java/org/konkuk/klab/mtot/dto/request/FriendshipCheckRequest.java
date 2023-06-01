@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class FriendshipCheckRequest {
-    private String userEmail;
+    private String memberEmail;
 }
