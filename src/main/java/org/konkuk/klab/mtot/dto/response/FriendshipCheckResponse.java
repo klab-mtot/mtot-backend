@@ -9,5 +9,6 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class FriendshipCheckResponse {
-    private List<Friendship> friendshipList;
+    private List<Friendship> pendingFriendshipReceive;
+    private List<Friendship> pendingFriendshipRequest;
 }
