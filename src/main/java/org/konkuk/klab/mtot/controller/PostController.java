@@ -1,14 +1,14 @@
 package org.konkuk.klab.mtot.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.konkuk.klab.mtot.dto.request.PostCreateRequest;
 import org.konkuk.klab.mtot.dto.response.PostCreateResponse;
+import org.konkuk.klab.mtot.oauth.LoginMemberEmail;
 import org.konkuk.klab.mtot.service.PostService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
     private final PostService postService;
-    @PostMapping("/members/{member}/journies/{journeyId}/titles/{title}/articles/{article}")
-    public ResponseEntity<PostCreateResponse> createPost(@PathVariable("member") String member, @PathVariable("journeyId") Long journeyId, @PathVariable("title") String title, @PathVariable("article") String article){
-        PostCreateResponse postCreateResponse = postService.createPost(member, journeyId, title, article);
+
+    @PostMapping
+    public ResponseEntity<PostCreateResponse> createPost(@LoginMemberEmail String email, @RequestBody @Valid PostCreateRequest postCreateRequest){
+        PostCreateResponse postCreateResponse = postService.createPost(email, postCreateRequest.getJourneyId(), postCreateRequest.getTitle(), postCreateRequest.getArticle());
         return ResponseEntity.ok(postCreateResponse);
     }
 }
