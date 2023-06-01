@@ -1,15 +1,9 @@
 package org.konkuk.klab.mtot.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.konkuk.klab.mtot.domain.Journey;
-import org.konkuk.klab.mtot.domain.Team;
 import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
-import org.konkuk.klab.mtot.dto.response.MemberGetAllResponse;
-import org.konkuk.klab.mtot.exception.TeamAccessDeniedException;
-import org.konkuk.klab.mtot.exception.TeamNotFoundException;
 import org.konkuk.klab.mtot.service.JourneyService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
