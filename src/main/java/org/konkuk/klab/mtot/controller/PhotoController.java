@@ -1,5 +1,6 @@
 package org.konkuk.klab.mtot.controller;
 
+import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
@@ -22,19 +23,19 @@ public class PhotoController {
     private final PhotoService photoService;
 
     @GetMapping("/pin")
-    private ResponseEntity<PhotoLinksResponse> getLinkByPin(@RequestBody Pin pin){
+    private ResponseEntity<PhotoLinksResponse> getLinkByPin(@RequestBody @Valid Pin pin){
         PhotoLinksResponse response = photoService.findPhotoByPin(pin);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/Journey")
-    private ResponseEntity<PhotoLinksResponse> getLinkByJourney(@RequestBody Journey journey){
+    private ResponseEntity<PhotoLinksResponse> getLinkByJourney(@RequestBody @Valid Journey journey){
         PhotoLinksResponse response = photoService.findPhotoByJourney(journey);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<PhotoUploadResponse> uploadPhotos2aws(@RequestBody String loginEmail, Long pinId, List<MultipartFile> multipartFiles) throws IOException {
+    public ResponseEntity<PhotoUploadResponse> uploadPhotos2aws(@RequestBody @Valid  String loginEmail, Long pinId, List<MultipartFile> multipartFiles) throws IOException {
         PhotoUploadResponse response = photoService.uploadPhotos(loginEmail,pinId,multipartFiles);
         return ResponseEntity.ok(response);
     }
