@@ -15,6 +15,8 @@ import org.konkuk.klab.mtot.repository.PinRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class PinService {
@@ -74,4 +76,9 @@ public class PinService {
         return pinRepository.save(pin);
     }
 
+    public Pin findPinById(Long Id){
+        Optional<Pin> pin = pinRepository.findById(Id);
+        if (pin.isPresent()) return pin.get();
+        else return null;
+    }
 }

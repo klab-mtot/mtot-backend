@@ -17,4 +17,6 @@ public interface PinRepository extends JpaRepository<Pin, Long> {
     Optional<Pin> findFirstPinByMemberIdAndJourneyId(@Param("memberId") Long memberId,
                                                      @Param("journeyId") Long journeyId);
 
+    @Query("select p from Pin p where p.id =: pinId")
+    Optional<Pin> findById(@Param("pinId")Long pinId);
 }

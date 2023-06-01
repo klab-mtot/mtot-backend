@@ -10,6 +10,7 @@ import org.konkuk.klab.mtot.dto.response.PhotoLinksResponse;
 import org.konkuk.klab.mtot.dto.response.PhotoUploadResponse;
 import org.konkuk.klab.mtot.s3.AwsS3FileSupporter;
 import org.konkuk.klab.mtot.service.PhotoService;
+import org.konkuk.klab.mtot.service.PinService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,10 +25,11 @@ import java.util.List;
 @RequestMapping("/photos")
 public class PhotoController {
     private final PhotoService photoService;
+    private final PinService pinService;
 
-    @GetMapping("/pin")
-    private ResponseEntity<PhotoLinksResponse> getLinkByPin(@RequestBody @Valid Pin pin){
-        PhotoLinksResponse response = photoService.findPhotoByPin(pin);
+    @GetMapping("/pin/{id}")
+    private ResponseEntity<PhotoLinksResponse> getLinkByPin(@PathVariable("id") Long pinId){
+        PhotoLinksResponse response = photoService.findPhotoByPin(pinService.findPinById(pinId));
         return ResponseEntity.ok(response);
     }
 
