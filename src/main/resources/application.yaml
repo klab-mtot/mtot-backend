@@ -9,7 +9,7 @@ spring:
       ddl-auto: create
 
   config:
-    import: application-jwt.yaml, application-oauth.yaml
+    import: application-jwt.yaml, application-oauth.yaml, application-s3.yaml
 
 logging:
   level:
