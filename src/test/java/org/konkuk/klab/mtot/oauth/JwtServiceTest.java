@@ -2,6 +2,8 @@ package org.konkuk.klab.mtot.oauth;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.konkuk.klab.mtot.exception.InvalidTokenException;
+import org.konkuk.klab.mtot.exception.TokenExpiredException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -42,10 +44,10 @@ class JwtServiceTest {
     @DisplayName("만료된 토큰은 예외를 발생한다.")
     public void raiseExceptionWhenExpiredTokenIsGiven(){
         String secretKey = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        JwtService newJwtService = new JwtService(secretKey, -1L);
+        JwtService newJwtService = new JwtService(secretKey, "headerPrefix", -1L);
         String token = newJwtService.generateToken("abc@mail.com");
         assertThatThrownBy(()-> newJwtService.verifyToken(token))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(TokenExpiredException.class);
     }
 
     @Test
@@ -53,7 +55,7 @@ class JwtServiceTest {
     public void raiseExceptionWhenInvalidateTokenIsGiven(){
         String token = "abcde.ablkasndv.asklnwe";
         assertThatThrownBy(()-> jwtService.verifyToken(token))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(InvalidTokenException.class);
     }
 
 }

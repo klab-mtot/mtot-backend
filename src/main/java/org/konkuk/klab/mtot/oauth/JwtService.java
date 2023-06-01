@@ -2,6 +2,8 @@ package org.konkuk.klab.mtot.oauth;
 
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.konkuk.klab.mtot.exception.TokenExpiredException;
+import org.konkuk.klab.mtot.exception.InvalidTokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +15,14 @@ public class JwtService {
     private final String secretKey;
     private final long tokenValidPeriod;
     private final JwtParser jwtParser;
+    private final String headerPrefix;
 
     public JwtService(@Value("${jwt.secretKey}") String secretKey,
+                      @Value("${header}") String headerPrefix,
                       @Value("${jwt.tokenValidPeriod}") long tokenValidPeriod){
         this.secretKey = secretKey;
         this.tokenValidPeriod = tokenValidPeriod;
+        this.headerPrefix = headerPrefix;
         this.jwtParser = Jwts.parser().setSigningKey(secretKey);
     }
 
@@ -36,30 +41,29 @@ public class JwtService {
         try{
             jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e){
-            throw new RuntimeException("토큰이 만료되었습니다.");
+            throw new TokenExpiredException();
         } catch (JwtException e){
-            throw new RuntimeException("인증되지 않은 토큰입니다.");
+            throw new InvalidTokenException();
         }
     }
 
     public String getTokenFromRequest(HttpServletRequest request){
-        String header = request.getHeader("Authorization");
+        String header = request.getHeader(headerPrefix);
         if (header == null)
-            throw new RuntimeException("토큰이 유효하지 않습니다.");
-
-        if (header.toLowerCase().startsWith("bearer ") && header.split(" ").length == 2){
+            throw new InvalidTokenException();
+        if (header.toLowerCase().startsWith("bearer ") && header.split(" ").length == 2)
             return header.split(" ")[1];
-        }
-        throw new RuntimeException("토큰이 유효하지 않습니다.");
+        throw new InvalidTokenException();
     }
 
     public String getPayload(String token){
         try{
             return jwtParser.parseClaimsJws(token).getBody().getSubject();
         } catch (ExpiredJwtException e){
-            throw new RuntimeException("토큰이 만료되었습니다.");
+            throw new TokenExpiredException();
         } catch (JwtException e){
-            throw new RuntimeException("인증되지 않은 토큰입니다.");
+            throw new InvalidTokenException();
         }
     }
+
 }
