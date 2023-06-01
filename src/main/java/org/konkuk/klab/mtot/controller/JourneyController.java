@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class JourneyController {
     private final JourneyService journeyService;
-    @PostMapping("/teams/{teamId}")
+    @PostMapping
     public ResponseEntity<CreateJourneyResponse> createJourney(@LoginMemberEmail String email, @RequestBody @Valid CreateJourneyRequest createJourneyRequest){
         CreateJourneyResponse createJourneyResponse = journeyService.createJourney(email, createJourneyRequest.getJourneyName(), createJourneyRequest.getTeamId());
         return ResponseEntity.ok(createJourneyResponse);
