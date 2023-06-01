@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
-    Optional<Friendship> findByRequesterIdAndReceiverId(@Param("memberId") Long requesterId, @Param("memberId") Long receiverId);
+    Optional<Friendship> findByRequesterIdAndReceiverId(@Param("requesterId") Long requesterId, @Param("receiverId") Long receiverId);
 
     // 유저가 처리하지 않은 않은 친구 요청을 반환함. (수락 혹은 거절되지 않은)
     @Query("select f from Friendship f where f.receiver.id=:memberId and f.isAccepted=false")

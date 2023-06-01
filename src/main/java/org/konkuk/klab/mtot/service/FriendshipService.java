@@ -36,7 +36,7 @@ public class FriendshipService {
 
     @Transactional(readOnly = true)
     // 유저 친구 확인
-    public List<Friendship> checkMemberFriend(String memberEmail){
+    public List<Friendship> findFriendshipList(String memberEmail){
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(MemberNotFoundException::new);
         List<Friendship> friendshipList = friendshipRepository.findMemberFriend(member.getId());
         return friendshipList;
