@@ -33,7 +33,7 @@ class MemberServiceTest {
     @DisplayName("회원 가입을 성공적으로 진행한다")
     public void signUpTest(){
         String mail = "abc@naver.com";
-        MemberSignUpRequest request = new MemberSignUpRequest("donghoony", mail, "q1w2e3r4");
+        MemberSignUpRequest request = new MemberSignUpRequest("donghoony", mail);
         memberService.join(request);
 
         Optional<Member> users = memberRepository.findByEmail(mail);
@@ -45,7 +45,7 @@ class MemberServiceTest {
     @DisplayName("회원 중복 가입을 방지한다")
     public void duplicateUserSignUpTest(){
         String mail = "abc@naver.com";
-        MemberSignUpRequest request = new MemberSignUpRequest("donghoony", mail, "q1w2e3r4");
+        MemberSignUpRequest request = new MemberSignUpRequest("donghoony", mail);
         memberService.join(request);
 
         assertThatThrownBy(()-> memberService.join(request))
