@@ -2,6 +2,6 @@ package org.konkuk.klab.mtot.exception;
 
 public class DuplicateFriendshipException extends RuntimeException{
     public DuplicateFriendshipException(){
-        super("이미 존재하는 친구 관계 입니다.");
+        super("친구 요청을 이미 보냈습니다.");
     }
 }

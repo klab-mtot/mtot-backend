@@ -1,11 +1,13 @@
 package org.konkuk.klab.mtot.service;
 
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.konkuk.klab.mtot.domain.Friendship;
 import org.konkuk.klab.mtot.domain.Member;
-import org.konkuk.klab.mtot.dto.request.*;
+import org.konkuk.klab.mtot.exception.AlreadyFriendException;
+import org.konkuk.klab.mtot.exception.DuplicateFriendshipException;
 import org.konkuk.klab.mtot.repository.FriendshipRepository;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 public class FriendServiceTest {
@@ -28,159 +30,152 @@ public class FriendServiceTest {
     MemberRepository memberRepository;
 
     @Test
-    @DisplayName("친구 신청 및 등록을 진행한다.")
+    @DisplayName("친구 신청을 성공적으로 진행한다.")
     public void friendshipTest(){
         // 회원가입1
-        String mail = "abc@naver.com";
-        MemberSignUpRequest request = new MemberSignUpRequest("donghoony", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        // 회원가입2
-        mail = "abcdef@naver.com";
-        request = new MemberSignUpRequest("gwonpyo", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        // DB에서 유저 가져오기
-        Optional<Member> requester = memberRepository.findByEmail("abc@naver.com");
-        Optional<Member> receiver = memberRepository.findByEmail("abcdef@naver.com");
+        Member member1 = new Member("donghoony", "abc@mail.com");
+        Member member2 = new Member("gwonpyo", "def@mail.com");
+        Long member1Id = memberRepository.save(member1).getId();
+        Long member2Id = memberRepository.save(member2).getId();
 
         // 친구 요청 보내기 (friendship 테이블에 해당 요청 기록)
-        friendshipService.requestFriend(requester.get().getEmail(), receiver.get().getEmail());
+        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
 
         // 요청 제대로 들어갔는지 확인
-        Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(requester.get().getId(), receiver.get().getId());
+        Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(member1Id, member2Id);
         assertThat(friendship).isNotEmpty();
+        assertThat(friendship.get().getRequester().getId()).isEqualTo(member1Id);
     }
 
     @Test
-    @DisplayName("친구 신청 및 등록 이후 수락 진행")
+    @DisplayName("친구 신청을 성공적으로 수락한다.")
     public void friendshipAcceptTest(){
-        // 회원가입1
-        String mail = "LeeSJ@naver.com";
-        MemberSignUpRequest request = new MemberSignUpRequest("LeeSJ", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        // 회원가입2
-        mail = "abcdef@naver.com";
-        request = new MemberSignUpRequest("gwonpyo", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        Optional<Member> requester = memberRepository.findByEmail("LeeSJ@naver.com");
-        Optional<Member> receiver = memberRepository.findByEmail("abcdef@naver.com");
+        Member member1 = new Member("donghoony", "abc@mail.com");
+        Member member2 = new Member("gwonpyo", "def@mail.com");
+        Long member1Id = memberRepository.save(member1).getId();
+        Long member2Id = memberRepository.save(member2).getId();
         
         // 친구 요청
-        friendshipService.requestFriend(requester.get().getEmail(), receiver.get().getEmail());
+        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
         
         // 요청 수락
-        friendshipService.updateFriendship(true, requester.get().getEmail(), receiver.get().getEmail());
+        friendshipService.updateFriendship(true, member1.getEmail(), member2.getEmail());
         
         // DB에서 accept table false에서 true값으로 변경
-        Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(requester.get().getId(), receiver.get().getId());
+        Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(member1Id, member2Id);
+        assertThat(friendship).isNotEmpty();
         assertThat(friendship.get().isAccepted()).isTrue();
+        assertThat(friendship.get().getReceiver().getId()).isEqualTo(member2Id);
     }
 
     @Test
-    @DisplayName("친구 신청 및 등록 이후 거절 진행")
+    @DisplayName("친구 신청을 성공적으로 거절한다.")
     public void friendshipRefuseTest(){
-        // 회원가입1
-        String mail = "LeeSJ@naver.com";
-        MemberSignUpRequest request = new MemberSignUpRequest("KBC", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        // 회원가입2
-        mail = "abcdef@naver.com";
-        request = new MemberSignUpRequest("gwonpyo", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        Optional<Member> requester = memberRepository.findByEmail("LeeSJ@naver.com");
-        Optional<Member> receiver = memberRepository.findByEmail("abcdef@naver.com");
+        Member member1 = new Member("donghoony", "abc@mail.com");
+        Member member2 = new Member("gwonpyo", "def@mail.com");
+        Long member1Id = memberRepository.save(member1).getId();
+        Long member2Id = memberRepository.save(member2).getId();
 
         // 친구 요청
-        FriendshipRequest friendshipRequest = new FriendshipRequest(requester.get().getEmail(), receiver.get().getEmail());
-        friendshipService.requestFriend(requester.get().getEmail(), receiver.get().getEmail());
+        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
 
         // 요청 거절 (DB에서 요청 삭제)
-        friendshipService.updateFriendship(false, requester.get().getEmail(), receiver.get().getEmail());
+        friendshipService.updateFriendship(false, member1.getEmail(), member2.getEmail());
 
         // 삭제되었는 확인
-        Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(requester.get().getId(), receiver.get().getId());
+        Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(member1Id, member2Id);
         assertThat(friendship).isEmpty();
     }
 
     @Test
     @DisplayName("친구 신청 보낸 것 과 받은 것 (수락되지 않은 것만) 가져오기")
     public void friendshipCheckTest(){
-        // 회원가입1
-        String mail = "LeeSJ@naver.com";
-        MemberSignUpRequest request = new MemberSignUpRequest("KBC", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        // 회원가입2
-        mail = "abcdef@naver.com";
-        request = new MemberSignUpRequest("gwonpyo", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        Optional<Member> requester = memberRepository.findByEmail("LeeSJ@naver.com");
-        Optional<Member> receiver = memberRepository.findByEmail("abcdef@naver.com");
+        Member member1 = new Member("donghoony", "abc@mail.com");
+        Member member2 = new Member("gwonpyo", "def@mail.com");
+        Long member1Id = memberRepository.save(member1).getId();
+        Long member2Id = memberRepository.save(member2).getId();
 
         // 친구 요청
-        friendshipService.requestFriend(requester.get().getEmail(), receiver.get().getEmail());
+        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
 
         // 친구 신청 온 것 확인
-        List<Friendship> checkList1 = friendshipService.checkMemberReceiveNotAccept(requester.get().getEmail());
-        assertThat(checkList1.size()==1).isTrue();
+        List<Friendship> checkList1 = friendshipService.checkMemberReceiveNotAccept(member1.getEmail());
+        assertThat(checkList1).hasSize(1);
         // 친구 신청 보낸 것 확인
-        List<Friendship> checkList2 = friendshipService.checkMemberRequestNotAccepted(receiver.get().getEmail());
-        assertThat(checkList2.size()==1).isTrue();
+        List<Friendship> checkList2 = friendshipService.checkMemberRequestNotAccepted(member2.getEmail());
+        assertThat(checkList2).hasSize(1);
     }
 
     @Test
-    @DisplayName("친구 목록 가져오기")
+    @DisplayName("친구 목록을 성공적으로 가져온다.")
     public void friendCheckTest(){
-        // 회원가입1
-        String mail = "LeeSJ@naver.com";
-        MemberSignUpRequest request = new MemberSignUpRequest("KBC", mail, "q1w2e3r4");
-        memberService.join(request);
+        Member member1 = new Member("donghoony", "abc@mail.com");
+        Member member2 = new Member("gwonpyo", "def@mail.com");
+        Long member1Id = memberRepository.save(member1).getId();
+        Long member2Id = memberRepository.save(member2).getId();
 
-        // 회원가입2
-        mail = "abcdef@naver.com";
-        request = new MemberSignUpRequest("gwonpyo", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        Optional<Member> requester = memberRepository.findByEmail("LeeSJ@naver.com");
-        Optional<Member> receiver = memberRepository.findByEmail("abcdef@naver.com");
-
-        // 친구 요청
-        friendshipService.requestFriend(requester.get().getEmail(), receiver.get().getEmail());
-
-        // 요청 수락
-        friendshipService.updateFriendship(true, requester.get().getEmail(), receiver.get().getEmail());
+        Friendship friendship = new Friendship(member1, member2);
+        friendship.setAccepted(true);
+        friendshipRepository.save(friendship);
 
         // 친구 확인
-        List<Friendship> checkList = friendshipService.findFriendshipList(requester.get().getEmail());
-        assertThat(checkList.size()==1).isTrue();
+        List<Friendship> checkList = friendshipService.findFriendshipList(member1.getEmail());
+        assertThat(checkList).hasSize(1);
+
+        List<Friendship> checkList2 = friendshipService.findFriendshipList(member2.getEmail());
+        assertThat(checkList2).hasSize(1);
     }
 
     @Test
-    @DisplayName("같은 친구 요청 보내기")
+    @DisplayName("같은 친구 요청을 두 번 보냈을 때 예외를 발생한다.")
     public void duplicationCheckTest() {
-        // 회원가입1
-        String mail = "LeeSJ@naver.com";
-        MemberSignUpRequest request = new MemberSignUpRequest("KBC", mail, "q1w2e3r4");
-        memberService.join(request);
+        Member member1 = new Member("donghoony", "abc@mail.com");
+        Member member2 = new Member("gwonpyo", "def@mail.com");
+        Long member1Id = memberRepository.save(member1).getId();
+        Long member2Id = memberRepository.save(member2).getId();
 
-        // 회원가입2
-        mail = "abcdef@naver.com";
-        request = new MemberSignUpRequest("gwonpyo", mail, "q1w2e3r4");
-        memberService.join(request);
-
-        Optional<Member> requester = memberRepository.findByEmail("LeeSJ@naver.com");
-        Optional<Member> receiver = memberRepository.findByEmail("abcdef@naver.com");
-
-        // 요청 여러 번 보냄
-        friendshipService.requestFriend(requester.get().getEmail(), receiver.get().getEmail());
+        // 친구 요청
+        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
 
         // DuplicateFriendshipException 발생
-        friendshipService.requestFriend(requester.get().getEmail(), receiver.get().getEmail());
+        assertThatThrownBy(()->friendshipService.requestFriend(member1.getEmail(), member2.getEmail()))
+                .isInstanceOf(DuplicateFriendshipException.class);
+    }
+
+    @Test
+    @DisplayName("한 쪽에서 친구 신청을 보내고, 다른 쪽에서 거절한 뒤, 다른 쪽에서 친구를 성공적으로 신청한다.")
+    public void rejectFriendAndSendAnotherFriendRequest(){
+        Member member1 = new Member("donghoony", "abc@mail.com");
+        Member member2 = new Member("gwonpyo", "def@mail.com");
+        Long member1Id = memberRepository.save(member1).getId();
+        Long member2Id = memberRepository.save(member2).getId();
+
+        // 친구 요청
+        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
+        friendshipService.updateFriendship(false, member1.getEmail(), member2.getEmail());
+
+        assertThatNoException().isThrownBy(()-> friendshipService.requestFriend(member2.getEmail(), member1.getEmail()));
+    }
+
+    @Test
+    @DisplayName("친구 수락한 뒤 다시 친구신청을 보냈을 때 예외를 발생한다.")
+    public void sendDuplicateFriendRequestAfterAccept(){
+        Member member1 = new Member("donghoony", "abc@mail.com");
+        Member member2 = new Member("gwonpyo", "def@mail.com");
+        Long member1Id = memberRepository.save(member1).getId();
+        Long member2Id = memberRepository.save(member2).getId();
+
+        // 친구 요청
+        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
+        friendshipService.updateFriendship(true, member1.getEmail(), member2.getEmail());
+
+        assertThatThrownBy(()-> friendshipService.requestFriend(member2.getEmail(), member1.getEmail()))
+                .isInstanceOf(AlreadyFriendException.class);
+    }
+
+    @AfterEach
+    public void tearDown(){
+        friendshipRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 }

@@ -24,11 +24,11 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
     // 유저와 친구 관계인 것들 반환 (수락된 혹은 수락한 요청들)
     @Query("select f from Friendship f where (f.requester.id=:memberId or f.receiver.id=:memberId) and f.isAccepted=true")
-    List<Friendship> findMemberFriend(@Param("memberId") Long memberId);
+    List<Friendship> findFriendsByMemberId(@Param("memberId") Long memberId);
 
     @Transactional
     @Modifying
-    @Query("delete from Friendship f where f.requester.id=:requesterId and f.receiver.id=:receiverId")
+    @Query("delete from Friendship f where f.requester.id =:requesterId and f.receiver.id =:receiverId")
     int deleteByRequesterIdAndReceiverId(@Param("requesterId") Long requesterId, @Param("receiverId") Long receiverId);
 }
 
