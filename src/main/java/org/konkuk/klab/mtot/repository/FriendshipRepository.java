@@ -12,17 +12,19 @@ import java.util.Optional;
 
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
-    Optional<Friendship> findByRequesterIdAndReceiverId(Long requesterId, Long receiverId);
+    Optional<Friendship> findByRequesterIdAndReceiverId(@Param("memberId") Long requesterId, @Param("memberId") Long receiverId);
 
-    // 유저가 받지 않은 친구 요청을 발환함
+    // 유저가 처리하지 않은 않은 친구 요청을 반환함. (수락 혹은 거절되지 않은)
     @Query("select f from Friendship f where f.receiver.id=:memberId and f.isAccepted=false")
-    List<Friendship> findPendingFriendshipReceivedByMemberId(Long memberId);
+    List<Friendship> findPendingFriendshipReceivedByMemberId(@Param("memberId") Long memberId);
 
+    // 유저가 보낸 요청 중 아직 처리되지 않은 요청을 반환함. (수락 혹은 거절되지 않은)
     @Query("select f from Friendship f where f.requester.id=:memberId and f.isAccepted=false")
-    List<Friendship> findPendingFrendshipRequestedByMemberId(Long memberId);
+    List<Friendship> findPendingFriendshipRequestedByMemberId(@Param("memberId") Long memberId);
 
-    @Query("select f from Friendship f where f.receiver.id=:memberId and f.isAccepted=false")
-    List<Friendship> findMemberFriend(Long memberId);
+    // 유저와 친구 관계인 것들 반환 (수락된 혹은 수락한 요청들)
+    @Query("select f from Friendship f where (f.requester.id=:memberId or f.receiver.id=:memberId) and f.isAccepted=true")
+    List<Friendship> findMemberFriend(@Param("memberId") Long memberId);
 
     @Transactional
     @Modifying
