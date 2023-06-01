@@ -6,8 +6,6 @@ import org.konkuk.klab.mtot.service.JourneyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
-
 @RequestMapping("/journey")
 @RestController
 @RequiredArgsConstructor
