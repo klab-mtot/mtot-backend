@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
 import org.konkuk.klab.mtot.domain.Photo;
 import org.konkuk.klab.mtot.domain.Pin;
+import org.konkuk.klab.mtot.dto.response.CalenderThumbnailResponse;
 import org.konkuk.klab.mtot.dto.response.PhotoLinksResponse;
 import org.konkuk.klab.mtot.dto.response.PhotoUploadResponse;
 import org.konkuk.klab.mtot.exception.JourneyNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -74,5 +76,18 @@ public class PhotoService {
             links.add(photo.getFilePath());
         }
         return new PhotoLinksResponse(links);
+    }
+
+    public CalenderThumbnailResponse findThumbnail(int year, int month){
+        LocalDate start = LocalDate.of(year,month,1);
+        LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
+        List<Photo> photos = photoRepository.findByMonth(start,end);
+        HashMap<LocalDate,String> map = new HashMap<>();
+        for(Photo photo:photos){
+            if (!map.containsKey(photo.getUploadDate())){
+                map.put(photo.getUploadDate(),photo.getFilePath());
+            }
+        }
+        return new CalenderThumbnailResponse(map);
     }
 }
