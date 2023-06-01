@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateJourneyRequest {
     private String journeyName;
+    private Long teamId;
 }
