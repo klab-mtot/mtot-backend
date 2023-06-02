@@ -1,49 +1,56 @@
 package org.konkuk.klab.mtot.controller;
 
-import org.konkuk.klab.mtot.dto.request.FriendCheckRequest;
+import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.dto.request.FriendshipCheckRequest;
 import org.konkuk.klab.mtot.dto.request.FriendshipRequest;
-import org.konkuk.klab.mtot.dto.request.FriendshipUpdateRequest;
-import org.konkuk.klab.mtot.dto.response.FriendCheckResponse;
-import org.konkuk.klab.mtot.dto.response.FriendshipCheckResponse;
-import org.konkuk.klab.mtot.dto.response.FriendshipResponse;
-import org.konkuk.klab.mtot.dto.response.FriendshipUpdateResponse;
+import org.konkuk.klab.mtot.dto.request.FriendshipAcceptRequest;
+import org.konkuk.klab.mtot.dto.response.*;
+import org.konkuk.klab.mtot.oauth.LoginMemberEmail;
 import org.konkuk.klab.mtot.service.FriendshipService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestControllerAdvice
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/friendship")
 public class FriendshipController {
-    @Autowired
-    FriendshipService friendshipService;
 
-    @GetMapping("/friendship")
-    @ResponseBody
-    public FriendCheckResponse getFriendList(@RequestBody FriendCheckRequest request){
-        return new FriendCheckResponse(friendshipService.findFriendshipList(request.getMemberEmail()));
+    private final FriendshipService friendshipService;
+
+    @GetMapping
+    public ResponseEntity<GetAllFriendshipInfoResponse> getFriendList(@LoginMemberEmail String email){
+        GetAllFriendshipInfoResponse response = friendshipService.findFriendshipList(email);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/friendship")
-    @ResponseBody
-    public FriendshipResponse requestFriendship(@RequestBody FriendshipRequest request){
-        return friendshipService.requestFriend(request.getRequesterEmail(), request.getReceiverEmail());
+    @PostMapping
+    public ResponseEntity<SendFriendshipResponse> requestFriendship(@LoginMemberEmail String email,
+                                                                    @RequestBody FriendshipRequest request){
+        SendFriendshipResponse response = friendshipService.requestFriend(email, request.getReceiverEmail());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/friendship/pending")
     @ResponseBody
-    public FriendshipCheckResponse getPendingFriendship(@RequestBody FriendshipCheckRequest request){
-        return new FriendshipCheckResponse(friendshipService.checkMemberReceiveNotAccept(request.getMemberEmail()), friendshipService.checkMemberRequestNotAccepted(request.getMemberEmail()));
+    public ResponseEntity<GetAllPendingFriendshipResponse> getPendingFriendship(@LoginMemberEmail String email,
+                                                                        @RequestBody FriendshipCheckRequest request){
+        GetAllPendingFriendshipResponse response = friendshipService.getAllPendingFriendRequests(email);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/friendship/reject")
     @ResponseBody
-    public FriendshipUpdateResponse rejectFriendList(@RequestBody FriendshipUpdateRequest request){
-        return new FriendshipUpdateResponse(friendshipService.updateFriendship(false, request.getRequesterEmail(), request.getReceiverEmail()));
+    public ResponseEntity<FriendshipUpdateResponse> rejectFriendList(@LoginMemberEmail String email,
+                                                                     @RequestBody FriendshipAcceptRequest request){
+        FriendshipUpdateResponse response = friendshipService.updateFriendship(email, false, request.getFriendShipId());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/friendship/accept")
     @ResponseBody
-    public FriendshipUpdateResponse acceptFriendList(@RequestBody FriendshipUpdateRequest request){
-        return new FriendshipUpdateResponse(friendshipService.updateFriendship(true, request.getRequesterEmail(), request.getReceiverEmail()));
+    public ResponseEntity<FriendshipUpdateResponse> acceptFriendList(@LoginMemberEmail String email,
+                                                                     @RequestBody FriendshipAcceptRequest request){
+        FriendshipUpdateResponse response = friendshipService.updateFriendship(email, true, request.getFriendShipId());
+        return ResponseEntity.ok(response);
     }
 }
