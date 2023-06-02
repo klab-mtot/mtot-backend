@@ -19,8 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class JourneyService {
         Team team = teamRepository.findById(teamId).orElseThrow(TeamNotFoundException::new);
 
         team.getMemberTeams().stream().filter(memberTeam ->
-                Objects.equals(memberTeam.getMember().getEmail(), memberEmail)
+               memberTeam.getMember().getEmail().equals(memberEmail)
         ).findAny().orElseThrow(TeamAccessDeniedException::new);
 
         Journey journey = new Journey(team, journeyName);
@@ -44,26 +42,29 @@ public class JourneyService {
     }
 
     public GetJourneyResponse getJourney(String memberEmail, Long journeyId){
+        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(MemberNotFoundException::new);
+
         Journey journey = journeyRepository.findById(journeyId).orElseThrow(JourneyNotFoundException::new);
+        journey.getTeam().getMemberTeams()
+                .stream()
+                .filter(memberTeam -> memberTeam.getMember().getId().equals(member.getId()))
+                .findAny()
+                .orElseThrow(TeamAccessDeniedException::new);
+
         return new GetJourneyResponse(journey.getId(), journey.getName(), journey.getPost(), journey.getPins());
     }
 
     public GetJourneyListResponse getJourneyList(String memberEmail){
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(MemberNotFoundException::new);
-        List<GetJourneyResponse> getJourneyResponses = journeyRepository.getJourneysFromMember(member.getId()).stream().map(
-                journey -> {
-            return new GetJourneyResponse(journey.getId(),journey.getName(),journey.getPost(),journey.getPins());
-        }).toList();
+        List<GetJourneyResponse> getJourneyResponses = journeyRepository.getJourneysFromMember(member.getId())
+                .stream()
+                .map(journey -> new GetJourneyResponse(
+                        journey.getId(),
+                        journey.getName(),
+                        journey.getPost(),
+                        journey.getPins()))
+                .toList();
 
         return new GetJourneyListResponse(getJourneyResponses);
     }
-    //저니 핀 목록 제공
-
-    //저니 핀 목록 추가기능은 여기서 생성은 핀 서비스에서 처리
-
-    //저니 사진 목록 추가만 여기서 사진 등록은 사진 서비스에서 처리
-
-    //저니 포스트 자동으로 생성되는거 연결
-
-
 }
