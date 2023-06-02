@@ -51,6 +51,12 @@ public class PinService {
         Member member = memberRepository.findByEmail(loginEmail)
                 .orElseThrow(MemberNotFoundException::new);
 
+        Journey journey = journeyRepository.findById(journeyId).orElseThrow(JourneyNotFoundException::new);
+        journey.getTeam().getMemberTeams().stream()
+                .filter(memberTeam -> memberTeam.getMember().getId().equals(member.getId()))
+                .findAny()
+                .orElseThrow(TeamAccessDeniedException::new);
+
         List<PinFromJourneyResponse> pinFromJourneyResponses =
                 pinRepository.findByJourneyId(journeyId)
                         .stream()
