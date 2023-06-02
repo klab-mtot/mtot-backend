@@ -1,5 +1,6 @@
 package org.konkuk.klab.mtot.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class Journey {
     @OneToOne(mappedBy = "journey")
     private Post post;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "journey")
     private List<Pin> pins = new ArrayList<>();
 

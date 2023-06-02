@@ -1,5 +1,6 @@
 package org.konkuk.klab.mtot.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,6 +14,7 @@ public class Post {
     @Id @GeneratedValue
     private Long id;
 
+    @JsonManagedReference
     @OneToOne
     @JoinColumn(name = "journey_id")
     private Journey journey;

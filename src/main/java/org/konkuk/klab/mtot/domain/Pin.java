@@ -1,5 +1,7 @@
 package org.konkuk.klab.mtot.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,10 +32,12 @@ public class Pin {
     @Column(name = "createdTime")
     private LocalDateTime createdTime;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "journey_id")
     private Journey journey;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "pin")
     private List<Photo> photos = new ArrayList<>();
 

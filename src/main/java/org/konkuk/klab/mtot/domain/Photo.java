@@ -1,5 +1,6 @@
 package org.konkuk.klab.mtot.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class Photo {
     @Column(name = "photo_id")
     private Long id;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     private Pin pin;
 

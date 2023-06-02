@@ -1,5 +1,6 @@
 package org.konkuk.klab.mtot.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,9 +23,11 @@ public class Team {
     @Column(name = "leader_id", nullable = false)
     private Long leaderId;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "team")
     private List<MemberTeam> memberTeams = new ArrayList<>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "team")
     private List<Journey> journeyList = new ArrayList<>();
 
