@@ -3,12 +3,12 @@ package org.konkuk.klab.mtot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
-import org.konkuk.klab.mtot.domain.Pin;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.Team;
 import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
 import org.konkuk.klab.mtot.dto.response.GetJourneyListResponse;
 import org.konkuk.klab.mtot.dto.response.GetJourneyResponse;
+import org.konkuk.klab.mtot.dto.response.PinInfoResponse;
 import org.konkuk.klab.mtot.exception.JourneyNotFoundException;
 import org.konkuk.klab.mtot.exception.MemberNotFoundException;
 import org.konkuk.klab.mtot.exception.TeamAccessDeniedException;
@@ -19,8 +19,6 @@ import org.konkuk.klab.mtot.repository.TeamRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-import java.util.Optional;
 import java.util.List;
 
 @Service
@@ -54,7 +52,11 @@ public class JourneyService {
                 .findAny()
                 .orElseThrow(TeamAccessDeniedException::new);
 
-        return new GetJourneyResponse(journey.getId(), journey.getName(), journey.getPost(), journey.getPins());
+        return new GetJourneyResponse(journey.getId(), journey.getName(), journey.getPost(), journey.getPins().
+                stream()
+                .map(pin -> {return new PinInfoResponse(pin.getId(), pin.getLocation());})
+                .toList()
+        );
     }
 
     public GetJourneyListResponse getJourneyList(String memberEmail){
@@ -65,7 +67,12 @@ public class JourneyService {
                         journey.getId(),
                         journey.getName(),
                         journey.getPost(),
-                        journey.getPins()))
+                        journey.getPins().
+                                stream()
+                                .map(pin -> {return new PinInfoResponse(pin.getId(), pin.getLocation());})
+                                .toList()
+                        )
+                )
                 .toList();
 
         return new GetJourneyListResponse(getJourneyResponses);
