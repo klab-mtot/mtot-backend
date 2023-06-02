@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/posts")
+@RequestMapping("/post")
 public class PostController {
 
     private final PostService postService;
@@ -32,7 +32,7 @@ public class PostController {
         return ResponseEntity.ok(createPostResponse);
     }
 
-    @PostMapping
+    @PostMapping("/edit")
     public ResponseEntity<EditPostResponse> editPost(@LoginMemberEmail String email,
                                                      @RequestBody @Valid EditPostRequest request){
         EditPostResponse response = postService.editPost(

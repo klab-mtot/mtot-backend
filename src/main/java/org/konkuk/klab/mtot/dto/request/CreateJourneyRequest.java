@@ -5,10 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class EditPostRequest {
-    private Long journeyId;
-    private String title;
-    private String article;
+@NoArgsConstructor
+public class CreateJourneyRequest {
+    private String journeyName;
+    private Long teamId;
 }
