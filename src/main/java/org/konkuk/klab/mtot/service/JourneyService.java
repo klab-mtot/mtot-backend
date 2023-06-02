@@ -3,6 +3,7 @@ package org.konkuk.klab.mtot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
+import org.konkuk.klab.mtot.domain.Pin;
 import org.konkuk.klab.mtot.domain.Team;
 import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
 import org.konkuk.klab.mtot.exception.TeamAccessDeniedException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,12 @@ public class JourneyService {
         Long journeyId = journeyRepository.save(journey).getId();
 
         return new CreateJourneyResponse(journeyId);
+    }
+
+    public Journey findJourneyById(Long journeyId) {
+        Optional<Journey> journey = journeyRepository.findById(journeyId);
+        if (journey.isPresent()) return journey.get();
+        else return null;
     }
     //저니 핀 목록 제공
 
