@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class FriendshipRequest {
-    private String receiverEmail;
+public class FriendshipAcceptRequest {
+    private Long friendShipId;
 }

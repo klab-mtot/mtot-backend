@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +25,8 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     @Query("select f from Friendship f where (f.requester.id=:memberId or f.receiver.id=:memberId) and f.isAccepted=true")
     List<Friendship> findFriendsByMemberId(@Param("memberId") Long memberId);
 
-    @Transactional
     @Modifying
-    @Query("delete from Friendship f where f.requester.id =:requesterId and f.receiver.id =:receiverId")
-    int deleteByRequesterIdAndReceiverId(@Param("requesterId") Long requesterId, @Param("receiverId") Long receiverId);
-}
+    @Query("delete from Friendship f where f.id =:friendshipId")
+    void deleteByFriendshipId(@Param("friendshipId") Long friendshipId);
 
+}
