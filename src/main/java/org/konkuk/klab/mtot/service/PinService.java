@@ -5,6 +5,8 @@ import org.konkuk.klab.mtot.domain.Journey;
 import org.konkuk.klab.mtot.domain.Location;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.Pin;
+import org.konkuk.klab.mtot.dto.response.GetAllPinFromJourneyResponse;
+import org.konkuk.klab.mtot.dto.response.PinFromJourneyResponse;
 import org.konkuk.klab.mtot.dto.response.PinUpdateResponse;
 import org.konkuk.klab.mtot.exception.JourneyNotFoundException;
 import org.konkuk.klab.mtot.exception.MemberNotFoundException;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,32 @@ public class PinService {
             return new PinUpdateResponse(newPin.getId());
         }
         return new PinUpdateResponse(beforePin.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public GetAllPinFromJourneyResponse GetAllPinFromJourney(String loginEmail, Long journeyId){
+        Member member = memberRepository.findByEmail(loginEmail)
+                .orElseThrow(MemberNotFoundException::new);
+
+        Journey journey = journeyRepository.findById(journeyId).orElseThrow(JourneyNotFoundException::new);
+        journey.getTeam().getMemberTeams().stream()
+                .filter(memberTeam -> memberTeam.getMember().getId().equals(member.getId()))
+                .findAny()
+                .orElseThrow(TeamAccessDeniedException::new);
+
+        List<PinFromJourneyResponse> pinFromJourneyResponses =
+                pinRepository.findByJourneyId(journeyId)
+                        .stream()
+                        .map(pin -> {
+                            return new PinFromJourneyResponse(
+                                    pin.getId(),
+                                    pin.getLocation(),
+                                    pin.getCreatedTime()
+                            );
+                        })
+                        .toList();
+
+        return new GetAllPinFromJourneyResponse(pinFromJourneyResponses);
     }
 
     private double getDistanceBetweenTwoLocationsInMeter(Location location1, Location location2){
