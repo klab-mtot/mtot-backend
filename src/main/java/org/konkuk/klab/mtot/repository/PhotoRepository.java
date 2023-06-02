@@ -10,8 +10,9 @@ import java.util.List;
 
 public interface PhotoRepository extends JpaRepository<Photo, Long> {
 
-    @Query("select p from Photo p where p.uploadDate between :start and :end group by p.uploadDate order by p.uploadDate asc")
-    List<Photo> getThumbnailPhotosBetween(@Param("start") LocalDate start,
+    @Query("select p from Photo p join p.pin.journey.team.memberTeams mt where mt.member.id =:memberId and p.uploadDate between :start and :end group by p.uploadDate")
+    List<Photo> getThumbnailPhotosBetween(@Param("memberId") Long memberId,
+                                          @Param("start") LocalDate start,
                                           @Param("end") LocalDate end);
     @Query("select p from Photo p where p.pin.id =:pinId")
     List<Photo> findAllByPinId(@Param("pinId") Long pinId);

@@ -70,7 +70,7 @@ public class PhotoService {
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
         
         // TODO: Member가 가진 Journey 가져오기 필요
-        List<DayThumbnailResponse> dayThumbnailResponses = photoRepository.getThumbnailPhotosBetween(startDate, endDate)
+        List<DayThumbnailResponse> dayThumbnailResponses = photoRepository.getThumbnailPhotosBetween(member.getId(), startDate, endDate)
                 .stream()
                 .map(photo -> new DayThumbnailResponse(photo.getUploadDate().getDayOfMonth(), photo.getImageUrl()))
                 .toList();
@@ -90,9 +90,7 @@ public class PhotoService {
 
         List<PhotoUrlResponse> photoUrlResponses = photoRepository.findAllByPinId(pinId)
                 .stream()
-                .map(photo -> {
-                    return new PhotoUrlResponse(photo.getImageUrl());
-                })
+                .map(photo -> new PhotoUrlResponse(photo.getImageUrl()))
                 .toList();
 
         return new GetAllPhotoUrlResponse(photoUrlResponses);
@@ -112,9 +110,7 @@ public class PhotoService {
 
         List<PhotoUrlResponse> photoUrlResponses = photoRepository.findByJourneyId(journey.getId())
                 .stream()
-                .map(photo -> {
-                    return new PhotoUrlResponse(photo.getImageUrl());
-                })
+                .map(photo -> new PhotoUrlResponse(photo.getImageUrl()))
                 .toList();
 
         return new GetAllPhotoUrlResponse(photoUrlResponses);
