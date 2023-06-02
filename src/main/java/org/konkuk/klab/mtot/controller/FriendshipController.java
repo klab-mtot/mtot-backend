@@ -43,7 +43,7 @@ public class FriendshipController {
     @ResponseBody
     public ResponseEntity<FriendshipUpdateResponse> rejectFriendList(@LoginMemberEmail String email,
                                                                      @RequestBody FriendshipAcceptRequest request){
-        FriendshipUpdateResponse response = friendshipService.updateFriendship(email, false, request.getFriendShipId());
+        FriendshipUpdateResponse response = friendshipService.updateFriendship(email, false, request.getFriendshipId());
         return ResponseEntity.ok(response);
     }
 
@@ -51,7 +51,7 @@ public class FriendshipController {
     @ResponseBody
     public ResponseEntity<FriendshipUpdateResponse> acceptFriendList(@LoginMemberEmail String email,
                                                                      @RequestBody FriendshipAcceptRequest request){
-        FriendshipUpdateResponse response = friendshipService.updateFriendship(email, true, request.getFriendShipId());
+        FriendshipUpdateResponse response = friendshipService.updateFriendship(email, true, request.getFriendshipId());
         return ResponseEntity.ok(response);
     }
 }
