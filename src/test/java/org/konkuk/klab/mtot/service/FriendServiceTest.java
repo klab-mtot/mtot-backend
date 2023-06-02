@@ -13,7 +13,6 @@ import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -56,10 +55,10 @@ public class FriendServiceTest {
         Long member2Id = memberRepository.save(member2).getId();
         
         // 친구 요청
-        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
-        
+        Long friendshipId = friendshipService.requestFriend(member1.getEmail(), member2.getEmail()).getId();
+
         // 요청 수락
-        friendshipService.updateFriendship(true, member1.getEmail(), member2.getEmail());
+        friendshipService.updateFriendship(member2.getEmail(), true, friendshipId);
         
         // DB에서 accept table false에서 true값으로 변경
         Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(member1Id, member2Id);
@@ -77,10 +76,10 @@ public class FriendServiceTest {
         Long member2Id = memberRepository.save(member2).getId();
 
         // 친구 요청
-        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
+        Long friendshipId = friendshipService.requestFriend(member1.getEmail(), member2.getEmail()).getId();
 
         // 요청 거절 (DB에서 요청 삭제)
-        friendshipService.updateFriendship(false, member1.getEmail(), member2.getEmail());
+        friendshipService.updateFriendship(member2.getEmail(), false, friendshipId);
 
         // 삭제되었는 확인
         Optional<Friendship> friendship = friendshipRepository.findByRequesterIdAndReceiverId(member1Id, member2Id);
@@ -99,11 +98,9 @@ public class FriendServiceTest {
         friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
 
         // 친구 신청 온 것 확인
-        List<Friendship> checkList1 = friendshipService.checkMemberReceiveNotAccept(member1.getEmail());
-        assertThat(checkList1).hasSize(1);
+        assertThat(friendshipRepository.findPendingFriendshipReceivedByMemberId(member2Id)).hasSize(1);
         // 친구 신청 보낸 것 확인
-        List<Friendship> checkList2 = friendshipService.checkMemberRequestNotAccepted(member2.getEmail());
-        assertThat(checkList2).hasSize(1);
+        assertThat(friendshipRepository.findPendingFriendshipRequestedByMemberId(member1Id)).hasSize(1);
     }
 
     @Test
@@ -118,12 +115,8 @@ public class FriendServiceTest {
         friendship.setAccepted(true);
         friendshipRepository.save(friendship);
 
-        // 친구 확인
-        List<Friendship> checkList = friendshipService.findFriendshipList(member1.getEmail());
-        assertThat(checkList).hasSize(1);
-
-        List<Friendship> checkList2 = friendshipService.findFriendshipList(member2.getEmail());
-        assertThat(checkList2).hasSize(1);
+        assertThat(friendshipRepository.findFriendsByMemberId(member1Id)).hasSize(1);
+        assertThat(friendshipRepository.findFriendsByMemberId(member2Id)).hasSize(1);
     }
 
     @Test
@@ -151,8 +144,9 @@ public class FriendServiceTest {
         Long member2Id = memberRepository.save(member2).getId();
 
         // 친구 요청
-        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
-        friendshipService.updateFriendship(false, member1.getEmail(), member2.getEmail());
+        Friendship friendship = new Friendship(member1, member2);
+        Long friendshipId = friendshipRepository.save(friendship).getId();
+        friendshipService.updateFriendship(member2.getEmail(), false, friendshipId);
 
         assertThatNoException().isThrownBy(()-> friendshipService.requestFriend(member2.getEmail(), member1.getEmail()));
     }
@@ -166,8 +160,9 @@ public class FriendServiceTest {
         Long member2Id = memberRepository.save(member2).getId();
 
         // 친구 요청
-        friendshipService.requestFriend(member1.getEmail(), member2.getEmail());
-        friendshipService.updateFriendship(true, member1.getEmail(), member2.getEmail());
+        Friendship friendship = new Friendship(member1, member2);
+        Long friendshipId = friendshipRepository.save(friendship).getId();
+        friendshipService.updateFriendship(member2.getEmail(), true, friendshipId);
 
         assertThatThrownBy(()-> friendshipService.requestFriend(member2.getEmail(), member1.getEmail()))
                 .isInstanceOf(AlreadyFriendException.class);
