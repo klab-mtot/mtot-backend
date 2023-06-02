@@ -47,14 +47,14 @@ public class PhotoService {
                 .orElseThrow(TeamAccessDeniedException::new);
 
         List<Long> photoIds = new ArrayList<>();
-        List<String> filePaths = awsS3FileSupporter.uploadImages(multipartFiles);
+        List<String> imageUrls = awsS3FileSupporter.uploadImages(multipartFiles);
 
-        for(String filePath : filePaths){
-            Photo photo = new Photo(pin, filePath, LocalDate.now());
+        for(String url : imageUrls){
+            Photo photo = new Photo(pin, url, LocalDate.now());
             Long photoId = photoRepository.save(photo).getId();
             photoIds.add(photoId);
         }
-        return new PhotoUploadResponse(photoIds, filePaths);
+        return new PhotoUploadResponse(photoIds, imageUrls);
     }
 
 }
