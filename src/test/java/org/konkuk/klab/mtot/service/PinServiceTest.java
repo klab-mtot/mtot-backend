@@ -120,6 +120,18 @@ class PinServiceTest {
         assertThat(found.get(0).getId()).isEqualTo(pinUpdateResponse.getId());
     }
 
+    @Test
+    @DisplayName("journey의 pin들을 가져옵니다.")
+    public void getAllPinFromJourney(){
+        register();
+        // 2개 추가
+        pinService.pinRequest(email, journeyId, newYearLocation);
+        pinService.pinRequest(email, journeyId, gonghakLocation);
+
+        // 따라서 해당 저니의 pin을 들고오면 2여야 함.
+        assertThat(pinService.GetAllPinFromJourney(email, journeyId).getPins()).hasSize(2);
+    }
+
     @AfterEach
     public void tearDown(){
         pinRepository.deleteAll();
