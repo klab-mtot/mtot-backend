@@ -4,7 +4,6 @@ package org.konkuk.klab.mtot.service;
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
 import org.konkuk.klab.mtot.domain.Member;
-import org.konkuk.klab.mtot.domain.MemberTeam;
 import org.konkuk.klab.mtot.domain.Team;
 import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
 import org.konkuk.klab.mtot.dto.response.GetJourneyListResponse;

@@ -21,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,7 +92,7 @@ class JourneyServiceTest {
         // then
         GetJourneyListResponse getJourneyListResponse = journeyService.getJourneyList(email);
         List<GetJourneyResponse> journeys = getJourneyListResponse.getJourneys();
-        List<Long> journeyIds = journeys.stream().map(journey -> journey.getJourneyId()).toList();
+        List<Long> journeyIds = journeys.stream().map(GetJourneyResponse::getJourneyId).toList();
         IntStream.range(0, 3).mapToObj(i -> assertThat(journeyIds.get(i).equals(createJourneyResponses.get(i))));
     }
 
