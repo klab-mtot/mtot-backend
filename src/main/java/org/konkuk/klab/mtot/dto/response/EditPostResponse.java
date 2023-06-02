@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PostCreateResponse {
+public class EditPostResponse {
     private Long id;
 }
