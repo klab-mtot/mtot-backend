@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class GetAllPhotoUrlResponse {
-    List<PhotoUrlResponse> photoUrls;
+    List<String> photoUrls;
 }
