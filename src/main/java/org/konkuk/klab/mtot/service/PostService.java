@@ -3,8 +3,8 @@ package org.konkuk.klab.mtot.service;
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
 import org.konkuk.klab.mtot.domain.Post;
-import org.konkuk.klab.mtot.dto.response.PostCreateResponse;
-import org.konkuk.klab.mtot.dto.response.PostEditResponse;
+import org.konkuk.klab.mtot.dto.response.CreatePostResponse;
+import org.konkuk.klab.mtot.dto.response.EditPostResponse;
 import org.konkuk.klab.mtot.exception.DuplicatePostException;
 import org.konkuk.klab.mtot.exception.JourneyNotFoundException;
 import org.konkuk.klab.mtot.exception.PostNotFoundException;
@@ -21,7 +21,7 @@ public class PostService {
     private final JourneyRepository journeyRepository;
 
     @Transactional
-    public PostCreateResponse createPost(String loginEmail, Long journeyId, String title, String article){
+    public CreatePostResponse createPost(String loginEmail, Long journeyId, String title, String article){
         Journey journey = journeyRepository.findById(journeyId)
             .orElseThrow(JourneyNotFoundException::new);
 
@@ -36,11 +36,11 @@ public class PostService {
 
         Post post = new Post(journey, title, article);
         Long postId = postRepository.save(post).getId();
-        return new PostCreateResponse(postId);
+        return new CreatePostResponse(postId);
     }
 
     @Transactional
-    public PostEditResponse editPost(String loginEmail, Long journeyId, String title, String article){
+    public EditPostResponse editPost(String loginEmail, Long journeyId, String title, String article){
         Journey journey = journeyRepository.findById(journeyId)
                 .orElseThrow(JourneyNotFoundException::new);
 
@@ -53,6 +53,6 @@ public class PostService {
         Post post = postRepository.findByJourneyId(journeyId)
                 .orElseThrow(PostNotFoundException::new);
         post.edit(title, article);
-        return new PostEditResponse(post.getId());
+        return new EditPostResponse(post.getId());
     }
 }
