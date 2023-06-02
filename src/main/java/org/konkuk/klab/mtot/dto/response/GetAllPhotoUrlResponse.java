@@ -7,6 +7,6 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class PhotoLinksResponse {
-    List<String> photoLinks;
+public class GetAllPhotoUrlResponse {
+    List<PhotoUrlResponse> photoUrls;
 }
