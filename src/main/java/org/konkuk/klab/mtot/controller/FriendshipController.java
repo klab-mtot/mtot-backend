@@ -32,14 +32,14 @@ public class FriendshipController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/friendship/pending")
+    @GetMapping("/pending")
     @ResponseBody
     public ResponseEntity<GetAllPendingFriendshipResponse> getPendingFriendship(@LoginMemberEmail String email){
         GetAllPendingFriendshipResponse response = friendshipService.getAllPendingFriendRequests(email);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/friendship/reject")
+    @PostMapping("/reject")
     @ResponseBody
     public ResponseEntity<FriendshipUpdateResponse> rejectFriendList(@LoginMemberEmail String email,
                                                                      @RequestBody FriendshipAcceptRequest request){
@@ -47,7 +47,7 @@ public class FriendshipController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/friendship/accept")
+    @PostMapping("/accept")
     @ResponseBody
     public ResponseEntity<FriendshipUpdateResponse> acceptFriendList(@LoginMemberEmail String email,
                                                                      @RequestBody FriendshipAcceptRequest request){
