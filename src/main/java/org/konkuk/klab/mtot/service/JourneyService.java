@@ -3,16 +3,24 @@ package org.konkuk.klab.mtot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
+import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.Team;
 import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
+import org.konkuk.klab.mtot.dto.response.GetJourneyListResponse;
+import org.konkuk.klab.mtot.dto.response.GetJourneyResponse;
+import org.konkuk.klab.mtot.exception.JourneyNotFoundException;
+import org.konkuk.klab.mtot.exception.MemberNotFoundException;
 import org.konkuk.klab.mtot.exception.TeamAccessDeniedException;
 import org.konkuk.klab.mtot.exception.TeamNotFoundException;
 import org.konkuk.klab.mtot.repository.JourneyRepository;
+import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.konkuk.klab.mtot.repository.TeamRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +28,7 @@ public class JourneyService {
 
     private final JourneyRepository journeyRepository;
     private final TeamRepository teamRepository;
+    private final MemberRepository memberRepository;
     @Transactional
     public CreateJourneyResponse createJourney(String memberEmail, String journeyName, Long teamId){
         Team team = teamRepository.findById(teamId).orElseThrow(TeamNotFoundException::new);
@@ -32,6 +41,21 @@ public class JourneyService {
         Long journeyId = journeyRepository.save(journey).getId();
 
         return new CreateJourneyResponse(journeyId);
+    }
+
+    public GetJourneyResponse getJourney(String memberEmail, Long journeyId){
+        Journey journey = journeyRepository.findById(journeyId).orElseThrow(JourneyNotFoundException::new);
+        return new GetJourneyResponse(journey.getId(), journey.getName(), journey.getPost(), journey.getPins());
+    }
+
+    public GetJourneyListResponse getJourneyList(String memberEmail){
+        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(MemberNotFoundException::new);
+        List<GetJourneyResponse> getJourneyResponses = journeyRepository.getJourneysFromMember(member.getId()).stream().map(
+                journey -> {
+            return new GetJourneyResponse(journey.getId(),journey.getName(),journey.getPost(),journey.getPins());
+        }).toList();
+
+        return new GetJourneyListResponse(getJourneyResponses);
     }
     //저니 핀 목록 제공
 
