@@ -1,10 +1,12 @@
 package org.konkuk.klab.mtot.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.konkuk.klab.mtot.dto.request.FriendshipCheckRequest;
-import org.konkuk.klab.mtot.dto.request.FriendshipRequest;
 import org.konkuk.klab.mtot.dto.request.FriendshipAcceptRequest;
-import org.konkuk.klab.mtot.dto.response.*;
+import org.konkuk.klab.mtot.dto.request.FriendshipRequest;
+import org.konkuk.klab.mtot.dto.response.FriendshipUpdateResponse;
+import org.konkuk.klab.mtot.dto.response.GetAllFriendshipInfoResponse;
+import org.konkuk.klab.mtot.dto.response.GetAllPendingFriendshipResponse;
+import org.konkuk.klab.mtot.dto.response.SendFriendshipResponse;
 import org.konkuk.klab.mtot.oauth.LoginMemberEmail;
 import org.konkuk.klab.mtot.service.FriendshipService;
 import org.springframework.http.ResponseEntity;
@@ -30,15 +32,14 @@ public class FriendshipController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/friendship/pending")
+    @GetMapping("/pending")
     @ResponseBody
-    public ResponseEntity<GetAllPendingFriendshipResponse> getPendingFriendship(@LoginMemberEmail String email,
-                                                                        @RequestBody FriendshipCheckRequest request){
+    public ResponseEntity<GetAllPendingFriendshipResponse> getPendingFriendship(@LoginMemberEmail String email){
         GetAllPendingFriendshipResponse response = friendshipService.getAllPendingFriendRequests(email);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/friendship/reject")
+    @PostMapping("/reject")
     @ResponseBody
     public ResponseEntity<FriendshipUpdateResponse> rejectFriendList(@LoginMemberEmail String email,
                                                                      @RequestBody FriendshipAcceptRequest request){
@@ -46,7 +47,7 @@ public class FriendshipController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/friendship/accept")
+    @PostMapping("/accept")
     @ResponseBody
     public ResponseEntity<FriendshipUpdateResponse> acceptFriendList(@LoginMemberEmail String email,
                                                                      @RequestBody FriendshipAcceptRequest request){
