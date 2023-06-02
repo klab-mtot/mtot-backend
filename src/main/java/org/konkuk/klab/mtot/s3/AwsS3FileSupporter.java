@@ -45,6 +45,6 @@ public class AwsS3FileSupporter {
             e.printStackTrace();
             throw new IOException("Failed To upload file");
         }
-        return fileName;
+        return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 }

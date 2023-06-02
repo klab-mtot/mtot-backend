@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PostEditResponse {
-    Long postId;
+public class SendFriendshipResponse {
+    private Long id;
 }
