@@ -40,7 +40,11 @@ public class FriendshipService {
                 .stream()
                 .map(friendship -> {
                     Member requester = friendship.getRequester();
-                    return new FriendshipInfoResponse(friendship.getId(), requester.getId(), requester.getName(), requester.getEmail());
+                    Member receiver = friendship.getReceiver();
+                    if (requester.getId().equals(member.getId()))
+                        return new FriendshipInfoResponse(friendship.getId(), receiver.getId(), receiver.getName(), receiver.getEmail());
+                    else return new FriendshipInfoResponse(friendship.getId(), requester.getId(), requester.getName(), requester.getEmail());
+                    
                 })
                 .toList();
         return new GetAllFriendshipInfoResponse(friendshipInfoResponses);
