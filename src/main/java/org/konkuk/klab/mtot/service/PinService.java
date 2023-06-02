@@ -63,9 +63,8 @@ public class PinService {
                         .map(pin -> {
                             return new PinFromJourneyResponse(
                                     pin.getId(),
-                                    pin.getJourney().getId(),
                                     pin.getLocation(),
-                                    pin.getPhotos()
+                                    pin.getCreatedTime()
                             );
                         })
                         .toList();
