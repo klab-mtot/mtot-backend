@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class MemberTeamGetResponse {
-    private Long memberId;
-    private Long groupId;
+    private Long teamId;
+    private String teamName;
 }

@@ -51,9 +51,12 @@ public class MemberTeamService {
     @Transactional(readOnly = true)
     public MemberTeamGetAllResponse getMemberTeamsByMemberEmail(String email){
         List<MemberTeam> memberTeams = memberTeamRepository.findAllByMemberEmail(email);
-        return new MemberTeamGetAllResponse(memberTeams.stream()
-                .map(memberTeam -> new MemberTeamGetResponse(memberTeam.getMember().getId(), memberTeam.getTeam().getId()))
-                .toList());
+        return new MemberTeamGetAllResponse(memberTeams.size(),
+                memberTeams
+                        .stream()
+                        .map(memberTeam -> new MemberTeamGetResponse(memberTeam.getId(), memberTeam.getTeam().getName()))
+                        .toList()
+        );
     }
 
 }
