@@ -55,7 +55,7 @@ public class FriendServiceTest {
         Long member2Id = memberRepository.save(member2).getId();
         
         // 친구 요청
-        Long friendshipId = friendshipService.requestFriend(member1.getEmail(), member2.getEmail()).getId();
+        Long friendshipId = friendshipService.requestFriend(member1.getEmail(), member2.getEmail()).getFriendshipId();
 
         // 요청 수락
         friendshipService.updateFriendship(member2.getEmail(), true, friendshipId);
@@ -76,7 +76,7 @@ public class FriendServiceTest {
         Long member2Id = memberRepository.save(member2).getId();
 
         // 친구 요청
-        Long friendshipId = friendshipService.requestFriend(member1.getEmail(), member2.getEmail()).getId();
+        Long friendshipId = friendshipService.requestFriend(member1.getEmail(), member2.getEmail()).getFriendshipId();
 
         // 요청 거절 (DB에서 요청 삭제)
         friendshipService.updateFriendship(member2.getEmail(), false, friendshipId);

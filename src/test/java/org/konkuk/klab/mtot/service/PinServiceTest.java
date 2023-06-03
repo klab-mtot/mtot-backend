@@ -117,7 +117,7 @@ class PinServiceTest {
 
         List<Pin> found = pinRepository.findAll();
         assertThat(found).hasSize(1);
-        assertThat(found.get(0).getId()).isEqualTo(pinUpdateResponse.getId());
+        assertThat(found.get(0).getId()).isEqualTo(pinUpdateResponse.getPinId());
     }
 
     @Test

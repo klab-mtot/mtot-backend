@@ -9,5 +9,5 @@ import java.util.List;
 @AllArgsConstructor
 public class MemberTeamGetAllResponse {
     private int count;
-    private List<MemberTeamGetResponse> memberTeamList;
+    private List<MemberTeamGetResponse> teamList;
 }

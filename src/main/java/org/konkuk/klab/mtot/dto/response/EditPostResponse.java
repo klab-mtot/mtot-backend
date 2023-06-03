@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class EditPostResponse {
-    private Long id;
+    private Long postId;
 }
