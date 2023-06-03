@@ -4,11 +4,9 @@ package org.konkuk.klab.mtot.service;
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
 import org.konkuk.klab.mtot.domain.Member;
+import org.konkuk.klab.mtot.domain.Post;
 import org.konkuk.klab.mtot.domain.Team;
-import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
-import org.konkuk.klab.mtot.dto.response.GetJourneyListResponse;
-import org.konkuk.klab.mtot.dto.response.GetJourneyResponse;
-import org.konkuk.klab.mtot.dto.response.PinInfoResponse;
+import org.konkuk.klab.mtot.dto.response.*;
 import org.konkuk.klab.mtot.exception.JourneyNotFoundException;
 import org.konkuk.klab.mtot.exception.MemberNotFoundException;
 import org.konkuk.klab.mtot.exception.TeamAccessDeniedException;
@@ -55,27 +53,41 @@ public class JourneyService {
                 .findAny()
                 .orElseThrow(TeamAccessDeniedException::new);
 
-        return new GetJourneyResponse(journey.getId(), journey.getName(), journey.getPost(), journey.getPins().
-                stream()
-                .map(pin -> {return new PinInfoResponse(pin.getId(), pin.getLocation());})
-                .toList()
+        PostInfoResponse postInfoResponse = null;
+        Post post = journey.getPost();
+        if (post != null) postInfoResponse = new PostInfoResponse(journey.getPost().getId(), journey.getPost().getTitle(), journey.getPost().getArticle());
+
+        return new GetJourneyResponse(
+                journey.getId(),
+                journey.getName(),
+                postInfoResponse,
+                journey.getPins()
+                        .stream()
+                        .map(pin -> {return new PinInfoResponse(pin.getId(), pin.getLocation());})
+                        .toList()
         );
     }
 
     @Transactional(readOnly = true)
     public GetJourneyListResponse getJourneyList(String memberEmail){
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(MemberNotFoundException::new);
+
         List<GetJourneyResponse> getJourneyResponses = journeyRepository.getJourneysFromMember(member.getId())
                 .stream()
-                .map(journey -> new GetJourneyResponse(
+                .map(journey -> {
+                    PostInfoResponse postInfoResponse = null;
+                    Post post = journey.getPost();
+                    if (post != null) postInfoResponse = new PostInfoResponse(journey.getPost().getId(), journey.getPost().getTitle(), journey.getPost().getArticle());
+
+                    return new GetJourneyResponse(
                         journey.getId(),
                         journey.getName(),
-                        journey.getPost(),
+                        postInfoResponse,
                         journey.getPins().
                                 stream()
                                 .map(pin -> {return new PinInfoResponse(pin.getId(), pin.getLocation());})
                                 .toList()
-                        )
+                        );}
                 )
                 .toList();
 
