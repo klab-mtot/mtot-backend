@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class MemberTeamGetAllResponse {
-    List<MemberTeamGetResponse> memberTeamList;
+    List<MemberTeamGetResponse> teamList;
 }
