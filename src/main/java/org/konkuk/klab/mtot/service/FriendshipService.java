@@ -100,28 +100,16 @@ public class FriendshipService {
     private void validateDuplicateFriendship(Member requester, Member receiver){
         friendshipRepository.findFriendsByMemberId(requester.getId())
                         .stream()
-                        .filter(f-> f.getReceiver().getId().equals(receiver.getId()))
+                        .filter(f-> f.getReceiver().getId().equals(receiver.getId())
+                        & f.getRequester().getId().equals(requester.getId()))
                         .findAny()
                         .ifPresent(f->{throw new AlreadyFriendException();});
 
         friendshipRepository.findFriendsByMemberId(receiver.getId())
                 .stream()
-                .filter(f-> f.getReceiver().getId().equals(requester.getId()))
+                .filter(f-> f.getReceiver().getId().equals(requester.getId())
+                & f.getRequester().getId().equals(receiver.getId()))
                 .findAny()
                 .ifPresent(f->{throw new AlreadyFriendException();});
-
-        friendshipRepository.findPendingFriendshipRequestedByMemberId(requester.getId())
-                .stream()
-                .findAny()
-                .ifPresent(friendship -> {
-                    throw new DuplicateFriendshipException();
-                });
-
-        friendshipRepository.findPendingFriendshipReceivedByMemberId(receiver.getId())
-                .stream()
-                .findAny()
-                .ifPresent(friendship -> {
-                    throw new DuplicateFriendshipException();
-                });
     }
 }
