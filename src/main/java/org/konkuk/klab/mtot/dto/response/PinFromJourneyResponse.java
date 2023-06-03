@@ -11,5 +11,5 @@ import java.time.LocalDateTime;
 public class PinFromJourneyResponse {
     private Long pinId;
     private Location location;
-    private LocalDateTime createdTime;
+    private LocalDateTime createdDate;
 }
