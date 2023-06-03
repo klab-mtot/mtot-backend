@@ -61,11 +61,9 @@ class MemberTeamServiceTest {
         MemberTeamJoinResponse response = memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
 
         assertThat(memberTeamRepository.findAll()).hasSize(1);
-        assertThat(memberTeamRepository.findAll().get(0).getTeam().getId()).isEqualTo(response.getGroupId());
+        assertThat(memberTeamRepository.findAll().get(0).getTeam().getId()).isEqualTo(response.getTeamId());
         // when
-        assertThatThrownBy(()->{
-            memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
-        }).isInstanceOf(DuplicateMemberOnTeamException.class);
+        assertThatThrownBy(()-> memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId)).isInstanceOf(DuplicateMemberOnTeamException.class);
     }
 
 
