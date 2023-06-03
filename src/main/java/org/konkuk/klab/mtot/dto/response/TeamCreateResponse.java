@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class TeamCreateResponse {
-    private Long groupId;
+    private Long teamId;
 }
