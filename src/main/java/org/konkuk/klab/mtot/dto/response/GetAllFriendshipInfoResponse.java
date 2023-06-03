@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class GetAllFriendshipInfoResponse {
-    List<FriendshipInfoResponse> friendShips;
+    List<FriendshipInfoResponse> friendships;
 }
