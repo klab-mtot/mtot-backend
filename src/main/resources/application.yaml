@@ -8,9 +8,21 @@ spring:
     hibernate:
       ddl-auto: create
 
-  config:
-    import: application-jwt.yaml, application-oauth.yaml, application-s3.yaml
-
 logging:
   level:
     org.hibernate.sql: debug
+
+jwt:
+  secretKey: ${JWT_SECRET_KEY}
+  tokenValidPeriod: ${JWT_TOKEN_VALID_PERIOD}
+
+google-oauth:
+  client-id: ${GOOGLE_CLIENT_ID}
+  client-secret: ${GOOGLE_CLIENT_SECRET}
+header: ${HEADER}
+
+s3:
+  accessKey: ${S3_ACCESS_KEY}
+  secretKey: ${S3_SECRET_KEY}
+  bucket: ${S3_BUCKET}
+  region: ${S3_REGION}
