@@ -2,13 +2,16 @@ package org.konkuk.klab.mtot.service;
 
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Journey;
+import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.Photo;
 import org.konkuk.klab.mtot.domain.Pin;
-import org.konkuk.klab.mtot.dto.response.PhotoUploadResponse;
+import org.konkuk.klab.mtot.dto.response.*;
 import org.konkuk.klab.mtot.exception.JourneyNotFoundException;
+import org.konkuk.klab.mtot.exception.MemberNotFoundException;
 import org.konkuk.klab.mtot.exception.PinNotFound;
 import org.konkuk.klab.mtot.exception.TeamAccessDeniedException;
 import org.konkuk.klab.mtot.repository.JourneyRepository;
+import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.konkuk.klab.mtot.repository.PhotoRepository;
 import org.konkuk.klab.mtot.repository.PinRepository;
 import org.konkuk.klab.mtot.s3.AwsS3FileSupporter;
@@ -28,7 +31,9 @@ public class PhotoService {
     private final AwsS3FileSupporter awsS3FileSupporter;
     private final PhotoRepository photoRepository;
     private final JourneyRepository journeyRepository;
-    public final PinRepository pinRepository;
+    private final PinRepository pinRepository;
+    private final MemberRepository memberRepository;
+
 
     @Transactional
     public PhotoUploadResponse uploadPhotos(String loginEmail, Long pinId, List<MultipartFile> multipartFiles) throws IOException {
@@ -55,6 +60,59 @@ public class PhotoService {
             photoIds.add(photoId);
         }
         return new PhotoUploadResponse(photoIds, imageUrls);
+    }
+
+    @Transactional(readOnly = true)
+    public CalenderThumbnailResponse findThumbnail(String email, int year, int month){
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+
+        LocalDate startDate = LocalDate.of(year, month,1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        List<DayThumbnailResponse> dayThumbnailResponses = photoRepository.getThumbnailPhotosBetween(member.getId(), startDate, endDate)
+                .stream()
+                .map(photo -> new DayThumbnailResponse(photo.getUploadDate().getDayOfMonth(), photo.getImageUrl()))
+                .toList();
+        return new CalenderThumbnailResponse(dayThumbnailResponses);
+    }
+
+    @Transactional(readOnly = true)
+    public GetAllPhotoUrlResponse getAllPhotosUrlByPinId(String email, Long pinId) {
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+        Pin pin = pinRepository.findById(pinId).orElseThrow(PinNotFound::new);
+        pin.getJourney().getTeam().getMemberTeams()
+                .stream()
+                .filter(memberTeam -> memberTeam.getMember().getId().equals(member.getId()))
+                .findAny()
+                .orElseThrow(TeamAccessDeniedException::new);
+
+        List<String> photoUrlResponses = photoRepository.findAllByPinId(pinId)
+                .stream()
+                .map(Photo::getImageUrl)
+                .toList();
+
+        return new GetAllPhotoUrlResponse(photoUrlResponses);
+    }
+
+    @Transactional(readOnly = true)
+    public GetAllPhotoUrlResponse getAllPhotosByJourneyId(String email, Long journeyId) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+
+        Journey journey = journeyRepository.findById(journeyId).orElseThrow(JourneyNotFoundException::new);
+
+        journey.getTeam().getMemberTeams()
+                .stream()
+                .filter(memberTeam -> memberTeam.getMember().getId().equals(member.getId()))
+                .findAny()
+                .orElseThrow(TeamAccessDeniedException::new);
+
+        List<String> photoUrlResponses = photoRepository.findByJourneyId(journey.getId())
+                .stream()
+                .map(Photo::getImageUrl)
+                .toList();
+
+        return new GetAllPhotoUrlResponse(photoUrlResponses);
     }
 
 }

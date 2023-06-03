@@ -8,6 +8,7 @@ import org.konkuk.klab.mtot.domain.Team;
 import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
 import org.konkuk.klab.mtot.dto.response.GetJourneyListResponse;
 import org.konkuk.klab.mtot.dto.response.GetJourneyResponse;
+import org.konkuk.klab.mtot.dto.response.PinInfoResponse;
 import org.konkuk.klab.mtot.exception.JourneyNotFoundException;
 import org.konkuk.klab.mtot.exception.MemberNotFoundException;
 import org.konkuk.klab.mtot.exception.TeamAccessDeniedException;
@@ -54,7 +55,11 @@ public class JourneyService {
                 .findAny()
                 .orElseThrow(TeamAccessDeniedException::new);
 
-        return new GetJourneyResponse(journey.getId(), journey.getName(), journey.getPost(), journey.getPins());
+        return new GetJourneyResponse(journey.getId(), journey.getName(), journey.getPost(), journey.getPins().
+                stream()
+                .map(pin -> {return new PinInfoResponse(pin.getId(), pin.getLocation());})
+                .toList()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -66,7 +71,12 @@ public class JourneyService {
                         journey.getId(),
                         journey.getName(),
                         journey.getPost(),
-                        journey.getPins()))
+                        journey.getPins().
+                                stream()
+                                .map(pin -> {return new PinInfoResponse(pin.getId(), pin.getLocation());})
+                                .toList()
+                        )
+                )
                 .toList();
 
         return new GetJourneyListResponse(getJourneyResponses);
