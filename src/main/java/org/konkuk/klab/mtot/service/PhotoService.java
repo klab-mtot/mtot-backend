@@ -67,7 +67,7 @@ public class PhotoService {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
         LocalDate startDate = LocalDate.of(year, month,1);
-        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+        LocalDate endDate = startDate.plusMonths(1);
 
         List<DayThumbnailResponse> dayThumbnailResponses = photoRepository.getThumbnailPhotosBetween(member.getId(), startDate, endDate)
                 .stream()
