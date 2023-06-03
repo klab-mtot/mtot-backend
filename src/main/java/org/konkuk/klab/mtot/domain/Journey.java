@@ -1,5 +1,6 @@
 package org.konkuk.klab.mtot.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -18,12 +19,14 @@ public class Journey {
     @Column(name = "journey_id")
     private Long id;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     private Team team;
 
     @Column(name = "name", nullable = false)
     private String name;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "journey")
     private Post post;
 
