@@ -7,6 +7,9 @@ import org.konkuk.klab.mtot.domain.Journey;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.MemberTeam;
 import org.konkuk.klab.mtot.domain.Team;
+import org.konkuk.klab.mtot.dto.response.CreateJourneyResponse;
+import org.konkuk.klab.mtot.dto.response.GetJourneyListResponse;
+import org.konkuk.klab.mtot.dto.response.GetJourneyResponse;
 import org.konkuk.klab.mtot.exception.TeamAccessDeniedException;
 import org.konkuk.klab.mtot.exception.TeamNotFoundException;
 import org.konkuk.klab.mtot.repository.JourneyRepository;
@@ -17,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -52,10 +57,51 @@ class JourneyServiceTest {
     }
 
     @Test
+    @DisplayName("여정을 조회한다.")
+    public void checkValidJourney(){
+        // given
+        Map<String, Object> map = registerAndReturnMap();
+        String email = (String) map.get("email");
+        Long teamId = (Long) map.get("teamId");
+
+        // when
+        CreateJourneyResponse createJourneyResponse = journeyService.createJourney(email, journeyName, teamId);
+        Long journeyId = createJourneyResponse.getId();
+
+        // then
+        GetJourneyResponse getJourneyResponse = journeyService.getJourney(email, journeyId);
+        assertThat(getJourneyResponse.getJourneyId()).isEqualTo(journeyId);
+        assertThat(getJourneyResponse.getName()).isEqualTo(journeyName);
+    }
+
+    @Test
+    @DisplayName("특정 멤버의 여정 리스트를 조회한다.")
+    public void checkValidJourneyList(){
+        // given
+        Map<String, Object> map = registerAndReturnMap();
+        String email = (String) map.get("email");
+        Long teamId = (Long) map.get("teamId");
+
+        // when
+        CreateJourneyResponse createJourneyResponse1 = journeyService.createJourney(email, "My Journey 1", teamId);
+        CreateJourneyResponse createJourneyResponse2 = journeyService.createJourney(email, "My Journey 2", teamId);
+        CreateJourneyResponse createJourneyResponse3 = journeyService.createJourney(email, "My Journey 3", teamId);
+        List<CreateJourneyResponse> createJourneyResponses = List.of(createJourneyResponse1, createJourneyResponse2, createJourneyResponse3);
+
+
+        // then
+        GetJourneyListResponse getJourneyListResponse = journeyService.getJourneyList(email);
+        List<GetJourneyResponse> journeys = getJourneyListResponse.getJourneys();
+        List<Long> journeyIds = journeys.stream().map(GetJourneyResponse::getJourneyId).toList();
+        IntStream.range(0, 3).mapToObj(i -> assertThat(journeyIds.get(i).equals(createJourneyResponses.get(i))));
+    }
+
+    @Test
     @DisplayName("존재하지 않는 그룹의 여정 등록 시 예외를 발생한다.")
     public void checkValidGroupId(){
         // given
         Long teamId = registerAndReturnTeamId();
+
         // when
         assertThatThrownBy(()-> journeyService.createJourney(email, journeyName, teamId + 1))
                 .isInstanceOf(TeamNotFoundException.class);
@@ -86,6 +132,23 @@ class JourneyServiceTest {
         MemberTeam memberTeam = new MemberTeam(member, team);
         memberTeamRepository.save(memberTeam);
         return teamId;
+    }
+
+    private Map<String, Object> registerAndReturnMap(){
+        Member member = new Member("Lee", email);
+        Long memberId = memberRepository.save(member).getId();
+        Team team = new Team("My Team", memberId);
+        Long teamId = teamRepository.save(team).getId();
+        MemberTeam memberTeam = new MemberTeam(member, team);
+        memberTeamRepository.save(memberTeam);
+
+        Map<String, Object> map = Map.ofEntries(
+                Map.entry("email", email),
+                Map.entry("teamId", teamId),
+                Map.entry("memberId", memberId)
+        );
+
+        return map;
     }
 
     @AfterEach

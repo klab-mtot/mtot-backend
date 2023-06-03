@@ -41,12 +41,15 @@ public class JourneyService {
         return new CreateJourneyResponse(journeyId);
     }
 
+    @Transactional(readOnly = true)
     public GetJourneyResponse getJourney(String memberEmail, Long journeyId){
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(MemberNotFoundException::new);
 
         Journey journey = journeyRepository.findById(journeyId).orElseThrow(JourneyNotFoundException::new);
-        journey.getTeam().getMemberTeams()
-                .stream()
+        Team team = journey.getTeam();
+
+
+        team.getMemberTeams().stream()
                 .filter(memberTeam -> memberTeam.getMember().getId().equals(member.getId()))
                 .findAny()
                 .orElseThrow(TeamAccessDeniedException::new);
@@ -54,6 +57,7 @@ public class JourneyService {
         return new GetJourneyResponse(journey.getId(), journey.getName(), journey.getPost(), journey.getPins());
     }
 
+    @Transactional(readOnly = true)
     public GetJourneyListResponse getJourneyList(String memberEmail){
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(MemberNotFoundException::new);
         List<GetJourneyResponse> getJourneyResponses = journeyRepository.getJourneysFromMember(member.getId())
