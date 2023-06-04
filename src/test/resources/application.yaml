@@ -8,8 +8,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-  config:
-    import: application-s3.yaml, application-oauth.yaml, application-jwt.yaml
+
   h2:
     console:
       settings:
@@ -19,7 +18,6 @@ spring:
 logging:
   level:
     org.hibernate.sql: debug
-
 
 jwt:
   secretKey: ${JWT_SECRET_KEY}
