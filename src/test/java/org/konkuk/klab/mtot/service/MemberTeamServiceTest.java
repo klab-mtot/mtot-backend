@@ -120,13 +120,14 @@ class MemberTeamServiceTest {
 
         // member3가 팀을 만듬
         Team team2 = new Team("team2", memberId3);
-        teamRepository.save(team2);
+        Long teamId2 = teamRepository.save(team2).getId();
         memberTeamRepository.save(new MemberTeam(member3, team2)).getId();
 
         // member3와 member1이 만든 팀의 id의 차이는 1이어야 함.
-        Long team1Id = memberTeamService.getMemberTeamsByMemberEmail(member3.getEmail()).getTeamList().get(0).getTeamId();
-        Long team2Id = memberTeamService.getMemberTeamsByMemberEmail(member3.getEmail()).getTeamList().get(1).getTeamId();
-        assertThat(team2Id-team1Id).isEqualTo(1);
+        Long gottenTeamId1 = memberTeamService.getMemberTeamsByMemberEmail(member3.getEmail()).getTeamList().get(0).getTeamId();
+        Long gottenTeamId2 = memberTeamService.getMemberTeamsByMemberEmail(member3.getEmail()).getTeamList().get(1).getTeamId();
+        assertThat(gottenTeamId1).isEqualTo(teamId1);
+        assertThat(gottenTeamId2).isEqualTo(teamId2);
     }
 
 
