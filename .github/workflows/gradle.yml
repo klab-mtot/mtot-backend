@@ -36,7 +36,7 @@ jobs:
     - name: Inject secret keys
       uses: microsoft/variable-substitution@v1
       with:
-        files: ./src/main/resources/application.yaml
+        files: ./src/test/resources/application.yaml
       env:
         google-oauth.client-id: ${{secrets.GOOGLE_CLIENT_ID}}
         google-oauth.client-secret: ${{secrets.GOOGLE_CLIENT_SECRET}}
