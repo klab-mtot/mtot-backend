@@ -115,8 +115,8 @@ class MemberTeamServiceTest {
         memberTeamRepository.save(new MemberTeam(member1, team1));
 
         // member1이 팀에 인원을 추가함
-        memberTeamService.registerMemberToTeam(member1.getEmail(), teamId1, memberId2);
-        memberTeamService.registerMemberToTeam(member1.getEmail(), teamId1, memberId3);
+        memberTeamService.registerMemberToTeam(member1.getEmail(), teamId1, member2.getEmail());
+        memberTeamService.registerMemberToTeam(member1.getEmail(), teamId1, member3.getEmail());
 
         // member3가 팀을 만듬
         Team team2 = new Team("team2", memberId3);
