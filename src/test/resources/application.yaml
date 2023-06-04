@@ -20,16 +20,16 @@ logging:
     org.hibernate.sql: debug
 
 jwt:
-  secretKey: ${JWT_SECRET_KEY}
-  tokenValidPeriod: ${JWT_TOKEN_VALID_PERIOD}
+  secretKey: ${secrets.JWT_SECRET_KEY}
+  tokenValidPeriod: ${secrets.JWT_TOKEN_VALID_PERIOD}
 
 google-oauth:
-  client-id: ${GOOGLE_CLIENT_ID}
-  client-secret: ${GOOGLE_CLIENT_SECRET}
-header: ${HEADER}
+  client-id: ${secrets.GOOGLE_CLIENT_ID}
+  client-secret: ${secrets.GOOGLE_CLIENT_SECRET}
+header: ${secrets.HEADER}
 
 s3:
-  accessKey: ${S3_ACCESS_KEY}
-  secretKey: ${S3_SECRET_KEY}
-  bucket: ${S3_BUCKET}
-  region: ${S3_REGION}
+  accessKey: ${secrets.S3_ACCESS_KEY}
+  secretKey: ${secrets.S3_SECRET_KEY}
+  bucket: ${secrets.S3_BUCKET}
+  region: ${secrets.S3_REGION}
