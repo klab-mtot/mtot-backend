@@ -46,7 +46,7 @@ jobs:
         s3.bucket: ${{secrets.S3_BUCKET}}
         s3.region: ${{secrets.S3_REGION}}
         spring.datasource.url: jdbc:h2:mem:mtot;
-        spring.datasource.password: ${{H2_PASSWORD}}
+        spring.datasource.password: ${{secrets.H2_PASSWORD}}
 
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
