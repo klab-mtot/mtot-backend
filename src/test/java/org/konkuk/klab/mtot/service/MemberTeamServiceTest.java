@@ -97,6 +97,38 @@ class MemberTeamServiceTest {
         assertThat(allByMember2Id).hasSize(1);
     }
 
+    @Test
+    @DisplayName("멤버를 그룹에 추가한다.")
+    public void getCorrectTeamIdTest(){
+        //given (멤버 등록)
+        Member member1 = new Member("Lee", "abc@naver.com");
+        Member member2 = new Member("Kim", "abcd@naver.com");
+        Member member3 = new Member("Nam", "abcde@naver.com");
+
+        Long memberId1 = memberRepository.save(member1).getId();
+        Long memberId2 = memberRepository.save(member2).getId();
+        Long memberId3 = memberRepository.save(member3).getId();
+
+        // member1이 팀을 만듬
+        Team team1 = new Team("team1", memberId1);
+        Long teamId1 = teamRepository.save(team1).getId();
+        memberTeamRepository.save(new MemberTeam(member1, team1));
+
+        // member1이 팀에 인원을 추가함
+        memberTeamService.registerMemberToTeam(member1.getEmail(), teamId1, memberId2);
+        memberTeamService.registerMemberToTeam(member1.getEmail(), teamId1, memberId3);
+
+        // member3가 팀을 만듬
+        Team team2 = new Team("team2", memberId3);
+        teamRepository.save(team2);
+        memberTeamRepository.save(new MemberTeam(member3, team2)).getId();
+
+        // member3와 member1이 만든 팀의 id의 차이는 1이어야 함.
+        Long team1Id = memberTeamService.getMemberTeamsByMemberEmail(member3.getEmail()).getTeamList().get(0).getTeamId();
+        Long team2Id = memberTeamService.getMemberTeamsByMemberEmail(member3.getEmail()).getTeamList().get(1).getTeamId();
+        assertThat(team2Id-team1Id).isEqualTo(1);
+    }
+
 
     @AfterEach
     void tearDown(){
