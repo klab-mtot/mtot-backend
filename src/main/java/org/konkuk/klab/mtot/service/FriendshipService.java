@@ -99,10 +99,10 @@ public class FriendshipService {
     // 친구 추가 요청시 중복된 friendship이 이미 존재하는지 확인
     private void validateDuplicateFriendship(Member requester, Member receiver){
         friendshipRepository.findFriendsByMemberId(requester.getId())
-                        .stream()
-                        .filter(f-> f.getReceiver().getId().equals(receiver.getId()))
-                        .findAny()
-                        .ifPresent(f->{throw new AlreadyFriendException();});
+                .stream()
+                .filter(f-> f.getReceiver().getId().equals(receiver.getId()))
+                .findAny()
+                .ifPresent(f->{throw new AlreadyFriendException();});
 
         friendshipRepository.findFriendsByMemberId(receiver.getId())
                 .stream()
@@ -112,13 +112,15 @@ public class FriendshipService {
 
         friendshipRepository.findPendingFriendshipRequestedByMemberId(requester.getId())
                 .stream()
+                .filter(f-> f.getReceiver().getId().equals(receiver.getId()))
                 .findAny()
                 .ifPresent(friendship -> {
                     throw new DuplicateFriendshipException();
                 });
 
-        friendshipRepository.findPendingFriendshipReceivedByMemberId(receiver.getId())
+        friendshipRepository.findPendingFriendshipRequestedByMemberId(receiver.getId())
                 .stream()
+                .filter(f-> f.getReceiver().getId().equals(requester.getId()))
                 .findAny()
                 .ifPresent(friendship -> {
                     throw new DuplicateFriendshipException();

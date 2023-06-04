@@ -24,7 +24,7 @@ public class TeamService {
 
         Team team = new Team(teamName, member.getId());
         Long teamId = teamRepository.save(team).getId();
-        memberTeamService.registerMemberToTeam(member.getEmail(), teamId, member.getId());
+        memberTeamService.registerMemberToTeam(member.getEmail(), teamId, member.getEmail());
         return new TeamCreateResponse(teamId);
     }
 }
