@@ -40,7 +40,7 @@ class MemberTeamServiceTest {
         Long teamId = teamRepository.save(team).getId();
 
         //when
-        memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
+        memberTeamService.registerMemberToTeam(member.getEmail(), teamId, member.getEmail());
 
         //then
         List<MemberTeam> all = memberTeamRepository.findAll();
@@ -58,12 +58,12 @@ class MemberTeamServiceTest {
         Long memberId = memberRepository.save(member).getId();
         Team team = new Team("New team", memberId);
         Long teamId = teamRepository.save(team).getId();
-        MemberTeamJoinResponse response = memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId);
+        MemberTeamJoinResponse response = memberTeamService.registerMemberToTeam(member.getEmail(), teamId, member.getEmail());
 
         assertThat(memberTeamRepository.findAll()).hasSize(1);
         assertThat(memberTeamRepository.findAll().get(0).getTeam().getId()).isEqualTo(response.getTeamId());
         // when
-        assertThatThrownBy(()-> memberTeamService.registerMemberToTeam(member.getEmail(), teamId, memberId)).isInstanceOf(DuplicateMemberOnTeamException.class);
+        assertThatThrownBy(()-> memberTeamService.registerMemberToTeam(member.getEmail(), teamId, member.getEmail())).isInstanceOf(DuplicateMemberOnTeamException.class);
     }
 
 

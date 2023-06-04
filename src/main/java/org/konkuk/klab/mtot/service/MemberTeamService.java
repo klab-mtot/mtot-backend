@@ -27,9 +27,9 @@ public class MemberTeamService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     @Transactional
-    public MemberTeamJoinResponse registerMemberToTeam(String leaderMail, Long teamId, Long memberId){
+    public MemberTeamJoinResponse registerMemberToTeam(String leaderMail, Long teamId, String memberEmail){
 
-        Member member = memberRepository.findById(memberId)
+        Member member = memberRepository.findByEmail(memberEmail)
                 .orElseThrow(MemberNotFoundException::new);
         Member leader = memberRepository.findByEmail(leaderMail)
                 .orElseThrow(MemberNotFoundException::new);
@@ -37,7 +37,7 @@ public class MemberTeamService {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(TeamNotFoundException::new);
 
-        memberTeamRepository.findByMemberIdAndTeamId(memberId, teamId)
+        memberTeamRepository.findByMemberEmailAndTeamId(memberEmail, teamId)
                 .ifPresent(memberTeam -> {
                     throw new DuplicateMemberOnTeamException();
                 });

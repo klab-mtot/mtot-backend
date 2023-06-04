@@ -25,7 +25,7 @@ public class MemberTeamController {
     @PostMapping("/teams/register")
     public ResponseEntity<MemberTeamJoinResponse> registerMemberToTeam(@LoginMemberEmail String email,
                                                                        @RequestBody @Valid MemberTeamJoinRequest request){
-        MemberTeamJoinResponse response = memberTeamService.registerMemberToTeam(email, request.getTeamId(), request.getMemberId());
+        MemberTeamJoinResponse response = memberTeamService.registerMemberToTeam(email, request.getTeamId(), request.getMemberEmail());
         return ResponseEntity.ok(response);
     }
 }

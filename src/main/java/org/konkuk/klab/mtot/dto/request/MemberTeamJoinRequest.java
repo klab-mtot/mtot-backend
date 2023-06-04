@@ -12,6 +12,6 @@ public class MemberTeamJoinRequest {
     @NotNull(message = "그룹 ID는 필수 입력 사항입니다.")
     private Long teamId;
 
-    @NotNull(message = "멤버 ID는 필수 입력 사항입니다.")
-    private Long memberId;
+    @NotNull(message = "멤버 Email은 필수 입력 사항입니다.")
+    private String memberEmail;
 }
