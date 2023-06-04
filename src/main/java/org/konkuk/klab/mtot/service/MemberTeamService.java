@@ -54,7 +54,7 @@ public class MemberTeamService {
         return new MemberTeamGetAllResponse(memberTeams.size(),
                 memberTeams
                         .stream()
-                        .map(memberTeam -> new MemberTeamGetResponse(memberTeam.getId(), memberTeam.getTeam().getName()))
+                        .map(memberTeam -> new MemberTeamGetResponse(memberTeam.getTeam().getId(), memberTeam.getTeam().getName()))
                         .toList()
         );
     }
