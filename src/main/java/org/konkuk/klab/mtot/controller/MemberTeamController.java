@@ -3,6 +3,7 @@ package org.konkuk.klab.mtot.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.dto.request.MemberTeamJoinRequest;
+import org.konkuk.klab.mtot.dto.response.GetAllTeamMemberResponse;
 import org.konkuk.klab.mtot.dto.response.MemberTeamGetAllResponse;
 import org.konkuk.klab.mtot.dto.response.MemberTeamJoinResponse;
 import org.konkuk.klab.mtot.oauth.LoginMemberEmail;
@@ -26,6 +27,13 @@ public class MemberTeamController {
     public ResponseEntity<MemberTeamJoinResponse> registerMemberToTeam(@LoginMemberEmail String email,
                                                                        @RequestBody @Valid MemberTeamJoinRequest request){
         MemberTeamJoinResponse response = memberTeamService.registerMemberToTeam(email, request.getTeamId(), request.getMemberEmail());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/teams/{teamId}")
+    public ResponseEntity<GetAllTeamMemberResponse> getAllTeamMember(@LoginMemberEmail String email,
+                                                                     @PathVariable("teamId") Long teamId){
+        GetAllTeamMemberResponse response = memberTeamService.getAllTeamMemberByTeamId(email, teamId);
         return ResponseEntity.ok(response);
     }
 }

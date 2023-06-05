@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.MemberTeam;
 import org.konkuk.klab.mtot.domain.Team;
+import org.konkuk.klab.mtot.dto.response.GetAllTeamMemberResponse;
 import org.konkuk.klab.mtot.dto.response.MemberTeamJoinResponse;
 import org.konkuk.klab.mtot.exception.DuplicateMemberOnTeamException;
 import org.konkuk.klab.mtot.repository.MemberRepository;
@@ -130,6 +131,29 @@ class MemberTeamServiceTest {
         assertThat(gottenTeamId2).isEqualTo(teamId2);
     }
 
+    @Test
+    @DisplayName("그룹 멤버를 확인한다.")
+    public void getAllTeamMemberTest(){
+        //given (멤버 등록)
+        Member member1 = new Member("Lee", "abc@naver.com");
+        Member member2 = new Member("Kim", "abcd@naver.com");
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        // member1이 팀을 만듬
+        Team team1 = new Team("team1", member1.getId());
+        Long teamId = teamRepository.save(team1).getId();
+        memberTeamRepository.save(new MemberTeam(member1, team1));
+
+        // member2를 팀에 추가함
+        memberTeamService.registerMemberToTeam(member1.getEmail(), teamId, member2.getEmail());
+
+        // 팀 멤버를 얻어온다.
+        GetAllTeamMemberResponse response = memberTeamService.getAllTeamMemberByTeamId(member1.getEmail(), teamId);
+        assertThat(response.getCount()).isEqualTo(2);
+        assertThat(response.getMemberList().size()).isEqualTo(2);
+    }
 
     @AfterEach
     void tearDown(){
