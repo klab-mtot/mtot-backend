@@ -4,13 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.konkuk.klab.mtot.domain.Member;
 import org.konkuk.klab.mtot.domain.MemberTeam;
 import org.konkuk.klab.mtot.domain.Team;
-import org.konkuk.klab.mtot.dto.response.MemberTeamGetAllResponse;
-import org.konkuk.klab.mtot.dto.response.MemberTeamGetResponse;
-import org.konkuk.klab.mtot.dto.response.MemberTeamJoinResponse;
-import org.konkuk.klab.mtot.exception.DuplicateMemberOnTeamException;
-import org.konkuk.klab.mtot.exception.MemberNotFoundException;
-import org.konkuk.klab.mtot.exception.NotALeaderException;
-import org.konkuk.klab.mtot.exception.TeamNotFoundException;
+import org.konkuk.klab.mtot.dto.response.*;
+import org.konkuk.klab.mtot.exception.*;
 import org.konkuk.klab.mtot.repository.MemberRepository;
 import org.konkuk.klab.mtot.repository.MemberTeamRepository;
 import org.konkuk.klab.mtot.repository.TeamRepository;
@@ -55,6 +50,24 @@ public class MemberTeamService {
                 memberTeams
                         .stream()
                         .map(memberTeam -> new MemberTeamGetResponse(memberTeam.getTeam().getId(), memberTeam.getTeam().getName()))
+                        .toList()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public GetAllTeamMemberResponse getAllTeamMemberByTeamId(String email, Long teamId){
+        memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+        Team team = teamRepository.findById(teamId).orElseThrow(TeamNotFoundException::new);
+
+        team.getMemberTeams().stream().filter(memberTeam ->
+                memberTeam.getMember().getEmail().equals(email)
+        ).findAny().orElseThrow(TeamAccessDeniedException::new);
+
+        List<Member> members = memberRepository.getAllTeamMemberByTeamId(teamId);
+        return new GetAllTeamMemberResponse(members.size(),
+                members
+                        .stream()
+                        .map(member -> new GetTeamMemberResponse(member.getId(), member.getName(), member.getEmail()))
                         .toList()
         );
     }
