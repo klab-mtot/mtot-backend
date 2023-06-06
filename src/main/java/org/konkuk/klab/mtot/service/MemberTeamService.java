@@ -56,6 +56,7 @@ public class MemberTeamService {
 
     @Transactional(readOnly = true)
     public GetAllTeamMemberResponse getAllTeamMemberByTeamId(String email, Long teamId){
+        memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
         Team team = teamRepository.findById(teamId).orElseThrow(TeamNotFoundException::new);
 
         team.getMemberTeams().stream().filter(memberTeam ->
